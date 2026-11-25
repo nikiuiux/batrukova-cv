@@ -14,7 +14,45 @@
    Elements with [data-drag] are moved by js/drag.js. It writes the offset
    into --dx / --dy (in cqw), so a moved sheet stays in place when the window
    is resized.
+   Fonts
+   -----
+   Medeo Sans is one variable font file with two axes: weight (100–900) and
+   optical size "opsz" (14 = Medeo Sans, 32 = Medeo Sans Display).
+   Both family names point to the same files, so the site does not depend on
+   fonts installed on the visitor's computer. The Display look is switched on
+   with font-variation-settings (see body and .medeo-text below).
+   Bodoni 72 is an Apple system font and cannot be shipped: Macs use their own,
+   everyone else gets Bodoni Moda from Google Fonts (linked in index.html).
    ========================================================================== */
+
+@font-face {
+  font-family: "Medeo Sans";
+  src: url("../fonts/MedeoSansVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Medeo Sans";
+  src: url("../fonts/MedeoSansVariable-Italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Medeo Sans Display";
+  src: url("../fonts/MedeoSansVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Medeo Sans Display";
+  src: url("../fonts/MedeoSansVariable-Italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root {
   --bg: #060709;
@@ -40,9 +78,14 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-text);
+  /* texts on the current sheets are "Medeo Sans Display" in Figma */
+  font-variation-settings: "opsz" 32;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }
+
+/* for texts set in plain "Medeo Sans" in Figma (the CV sheets) */
+.medeo-text { font-variation-settings: "opsz" 14; }
 
 .stage {
   height: 100vh;
