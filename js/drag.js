@@ -77,6 +77,9 @@
       if (!target || !target.hasAttribute('data-drag')) return;
       e.preventDefault();
       target.style.zIndex = ++top;
+      // the menu card stays above the sheet it opened, so the next item is still clickable
+      const card = a.closest('[data-drag]');
+      if (card) card.style.zIndex = ++top;
       target.animate(
         [{ scale: 1 }, { scale: 1.02 }, { scale: 1 }],
         { duration: 350, easing: 'ease-out' }

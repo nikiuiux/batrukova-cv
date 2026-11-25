@@ -64,8 +64,8 @@
   --card-ink: #1d2b38;
   --menu-ink: #333a41;
 
-  --font-display: "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
-  --font-italic: "Bodoni 72", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
+  --font-display: "itc-bodoni-seventytwo", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
+  --font-italic: "itc-bodoni-seventytwo", "Bodoni 72", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
   --font-title: "Instrument Serif", "Bodoni 72 Oldstyle", "Bodoni Moda", Georgia, serif;
   --font-text: "Medeo Sans Display", "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -247,9 +247,9 @@ body {
   margin: 0;
   font-family: var(--font-title);
   font-weight: 400;
-  font-size: 4.78cqw;
-  line-height: 5.46cqw;
-  color: var(--card-ink);
+  font-size: 4.584cqw;             /* 33.2px in the 320px menu */
+  line-height: 5.239cqw;
+  color: #333a41;
 }
 
 .menu {
@@ -258,7 +258,7 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.91cqw;
+  gap: 0.873cqw;
 }
 
 .menu a {
@@ -270,12 +270,12 @@ body {
   cursor: pointer;
 }
 
-.menu__label { font-family: var(--font-display); font-size: 3.185cqw; }
+.menu__label { font-family: var(--font-display); font-size: 3.056cqw; }
 
 .menu__num {
-  font-family: var(--font-display);
-  font-size: 1.365cqw;
-  letter-spacing: -0.109cqw;
+  font-family: "Medeo Sans", var(--font-text);
+  font-variation-settings: "opsz" 14;
+  font-size: 1.31cqw;               /* 9.5px in the 320px menu */
   color: var(--card-ink);
 }
 
@@ -287,61 +287,89 @@ body {
 
 .menu a:focus-visible { outline: 2px solid var(--card-ink); outline-offset: 3px; }
 
-/* ---------- A5 sheets (Figma frame "A5 - 1 / paragraphs", 304.452 × 431.307)
-   Same Figma scale as the intro sheet: 1px = 0.22752cqw.
-   It lies under the intro sheet: drag the intro sheet away to see it. ---------- */
+/* ---------- Section sheets (Figma section "handoff")
+   Same Figma scale as the intro sheet: 1px in Figma = 0.22752cqw.
+   Conferences & Forums 420 × 595, Publications 412 × 622.
+   Stacked under the intro sheet; they peek out from its left edge. ---------- */
 
-.a5 {
+.page {
   position: absolute;
   z-index: 2;
-  width: 69.27cqw;
-  height: 98.13cqw;
-  background: #f1f3f7;
-  box-shadow: 0 0.91cqw 1.05cqw rgba(60, 60, 60, 0.2);
+  padding: 3.64cqw;                 /* 16px */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   /* title on top, content at the bottom */
+  background: #f0f1f4;
+  box-shadow: 0.2275cqw 0.91cqw 2.093cqw 0.91cqw rgba(52, 52, 52, 0.03);
   overflow: clip;
 }
 
-.a5--conferences {
+.page--conferences {
+  z-index: 2;
+  width: 95.558cqw;                 /* 420px */
+  height: 135.374cqw;               /* 595px */
   --rot: -3deg;
-  left: -8cqw;   /* peeks out to the left from under the intro sheet */
-  top: 30cqw;
+  left: -9cqw;
+  top: 4cqw;
 }
 
-.a5__content {
-  position: absolute;
-  left: 5.233cqw;
-  top: 6.598cqw;
-  width: 58.7cqw;
-  display: flex;
-  flex-direction: column;
-  gap: 3.64cqw;
+.page--publications {
+  z-index: 1;
+  width: 93.738cqw;                 /* 412px */
+  height: 141.517cqw;               /* 622px */
+  --rot: 2deg;
+  left: -6cqw;
+  top: -1cqw;
 }
 
-.a5__title {
+.page__title {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 2.73cqw;
+  font-size: 4.55cqw;               /* 20px */
   line-height: normal;
-  color: #343434;
+  color: #454545;
 }
 
+.page--publications .page__title { color: #343434; }
+
+/* conferences list */
 .events {
   list-style: none;
   margin: 0;
   padding: 0;
+  width: 58.018cqw;                 /* 255px */
   display: flex;
   flex-direction: column;
-  gap: 1.82cqw;
-  font-family: var(--font-text);
-  font-size: 2.161cqw;
-  line-height: 2.844cqw;
+  gap: 3.64cqw;                     /* 16px */
+  font-family: "Medeo Sans", var(--font-text);
+  font-variation-settings: "opsz" 14;
+  font-size: 2.275cqw;              /* 10px */
 }
 
-.event { display: flex; flex-direction: column; gap: 0.455cqw; }
+.event { display: flex; flex-direction: column; gap: 0.91cqw; }   /* 4px */
 .event p { margin: 0; }
-.event__name { font-weight: 500; color: #1d2b38; }
-.event__details { font-weight: 400; color: rgba(29, 43, 56, 0.6); }
+.event__name { line-height: 2.844cqw; color: #454545; }          /* lh 12.5px */
+.event--key .event__name {
+  font-family: "Medeo Sans Display", var(--font-text);
+  font-variation-settings: "opsz" 32;
+  font-weight: 700;
+}
+.event__name--narrow { max-width: 33.67cqw; }                     /* 148px */
+.event__name--wide { max-width: 50.737cqw; }                      /* 223px */
+.event__details { line-height: normal; color: rgba(29, 43, 56, 0.6); }
+
+/* publications list */
+.pubs {
+  font-family: "Medeo Sans", var(--font-text);
+  font-variation-settings: "opsz" 14;
+  font-size: 2.275cqw;              /* 10px */
+  line-height: 2.844cqw;            /* 12.5px */
+  color: #252525;
+}
+.pubs p { margin: 0 0 2.73cqw; }  /* 12px */
+.pubs p:last-child { margin-bottom: 0; }
+.pub__source { color: rgba(69, 69, 69, 0.6); }
 
 /* ---------- "put back" button, shows up after something was moved ---------- */
 

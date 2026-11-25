@@ -19,41 +19,59 @@
       <!-- Every element with data-drag can be grabbed and moved. -->
       <div class="sheet sheet--back" data-drag aria-hidden="true"></div>
 
-      <!-- A5 sheet: Conferences & Forums. Lies under the intro sheet. -->
-      <article class="a5 a5--conferences" data-drag id="conferences">
-        <div class="a5__content">
-          <h2 class="a5__title">CONFERENCES &amp; FORUMS</h2>
-          <ul class="events">
-            <li class="event">
-              <p class="event__name">III International Symposium "Inventing the Future"</p>
-              <p class="event__details">November 12–13, 2026 — Participant</p>
-            </li>
-            <li class="event">
-              <p class="event__name">Forum "Platform Economy Day"</p>
-              <p class="event__details">November 11, 2026 — Attendee</p>
-            </li>
-            <li class="event">
-              <p class="event__name">International Forum "Russian Energy Week 2026"</p>
-              <p class="event__details">October 14–16, 2026 — Participant</p>
-            </li>
-            <li class="event">
-              <p class="event__name">Presentation of Russian Management Leadership Program for the Civil Service and Development Institutions of the Far East and the Arctic</p>
-              <p class="event__details">January 21, 2026 — Participant</p>
-            </li>
-            <li class="event">
-              <p class="event__name">International Scientific and Practical Conference "Asset Management 2025"</p>
-              <p class="event__details">December 9, 2025, Moscow State Institute of International Relations (University) of the Ministry of Foreign Affairs of the Russian Federation — Attendee</p>
-            </li>
-            <li class="event">
-              <p class="event__name">10th International Eastern Economic Forum (EEF)</p>
-              <p class="event__details">September 3–6, 2025 — Panel Discussion Attendee; Participant in negotiations with Chinese partners and teams of Russian regional governors</p>
-            </li>
-            <li class="event">
-              <p class="event__name">International Youth Scientific Forum "Lomonosov-2025"</p>
-              <p class="event__details">April 23–25, 2025, Lomonosov Moscow State University (LMSU) — Attendee</p>
-            </li>
-          </ul>
+      <!-- Section sheets from Figma section "handoff". They lie under the intro sheet;
+           drag the intro sheet away or click a menu item to bring one on top. -->
+
+      <article class="page page--publications" data-drag id="publications">
+        <h2 class="page__title">Publications</h2>
+        <div class="pubs">
+          <p><span class="pub__title">Public-private partnership: risks of&nbsp;implementing infrastructure projects, 2021</span><br>
+             <span class="pub__source">Actual Issues of&nbsp;Modern Economy, No.&nbsp;2, pp.&nbsp;364–368, 2021 (In&nbsp;Russ)</span></p>
+          <p><span class="pub__title">Financing Infrastructure Projects in&nbsp;Public-Private Partnerships: The&nbsp;UK Experience</span>
+             <span class="pub__source">Economics and&nbsp;Management: Problems, Solutions, Vol.&nbsp;1, No.&nbsp;1 (121), pp.&nbsp;123–127, 2022. (In&nbsp;Russ)</span></p>
+          <p><span class="pub__title">Financing Infrastructure Projects Implemented Using Public-Private Partnership Mechanisms</span>
+             <span class="pub__source">Financial Economy, Vol.&nbsp;5, No.&nbsp;5, pp.&nbsp;372–375, 2022. (In&nbsp;Russ)</span></p>
+          <p><span class="pub__title">Taxation in&nbsp;the&nbsp;Implementation of&nbsp;Public-Private Partnership Projects</span><br>
+             <span class="pub__source">Economics and&nbsp;Management, Vol.&nbsp;29, No.&nbsp;3, pp.&nbsp;345–351, 2023. (In&nbsp;Russ)</span></p>
+          <p><span class="pub__title">Tax Incentives in&nbsp;the&nbsp;System of&nbsp;State Support Measures for&nbsp;Industrial Development</span><br>
+             <span class="pub__source">Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;2 (55), pp.&nbsp;295–299, 2023. (In&nbsp;Russ)</span></p>
+          <p><span class="pub__title">Financing Instruments in&nbsp;Structuring Public-Private Partnership Projects</span><br>
+             <span class="pub__source">Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;5 (58), 2023. (In&nbsp;Russ)</span></p>
         </div>
+      </article>
+
+      <article class="page page--conferences" data-drag id="conferences">
+        <h2 class="page__title">Conferences &amp; Forums</h2>
+        <ul class="events">
+          <li class="event event--key">
+            <p class="event__name event__name--narrow">III International Symposium “Inventing the&nbsp;Future”</p>
+            <p class="event__details">November 12–13, 2026&nbsp;— Participant</p>
+          </li>
+          <li class="event">
+            <p class="event__name">Forum “Platform Economy Day”</p>
+            <p class="event__details">November 11, 2026&nbsp;— Attendee</p>
+          </li>
+          <li class="event event--key">
+            <p class="event__name">International Forum “Russian Energy Week 2026”</p>
+            <p class="event__details">October 14–16, 2026&nbsp;— Participant</p>
+          </li>
+          <li class="event">
+            <p class="event__name event__name--wide">Presentation of&nbsp;Russian Management Leadership Program for&nbsp;the&nbsp;Civil Service and&nbsp;Development Institutions of&nbsp;the&nbsp;Far East and&nbsp;the&nbsp;Arctic</p>
+            <p class="event__details">January 21, 2026&nbsp;— Participant</p>
+          </li>
+          <li class="event">
+            <p class="event__name">International Scientific and&nbsp;Practical Conference “Asset Management 2025”</p>
+            <p class="event__details">December 9, 2025, Moscow State Institute of&nbsp;International Relations (University) of&nbsp;the&nbsp;Ministry of&nbsp;Foreign Affairs of&nbsp;the&nbsp;Russian Federation&nbsp;— Attendee</p>
+          </li>
+          <li class="event event--key">
+            <p class="event__name">10th International Eastern Economic Forum (EEF)</p>
+            <p class="event__details">September 3–6, 2025&nbsp;— Panel Discussion Attendee; Participant in&nbsp;negotiations with&nbsp;Chinese partners and&nbsp;teams of&nbsp;Russian regional governors</p>
+          </li>
+          <li class="event event--key">
+            <p class="event__name">International Youth Scientific Forum “Lomonosov-2025”</p>
+            <p class="event__details">April 23–25, 2025, Lomonosov Moscow State University (LMSU)&nbsp;— Attendee</p>
+          </li>
+        </ul>
       </article>
 
       <article class="sheet sheet--intro" data-drag id="intro">
@@ -68,11 +86,10 @@
       <nav class="card" data-drag aria-label="Sections">
         <h2 class="card__title">Contents</h2>
         <ol class="menu">
-          <li><a href="#conferences" draggable="false"><span class="menu__label">Conferences &amp; Articles</span><span class="menu__num">[01]</span></a></li>
-          <li><a href="#projects" draggable="false"><span class="menu__label">Projects</span><span class="menu__num">[02]</span></a></li>
-          <li><a href="#clubs" draggable="false"><span class="menu__label">Clubs</span><span class="menu__num">[03]</span></a></li>
-          <li><a href="#awards" draggable="false"><span class="menu__label">Awards &amp; Medals</span><span class="menu__num">[04]</span></a></li>
-          <li><a href="#competitions" draggable="false"><span class="menu__label">Competitions</span><span class="menu__num">[05]</span></a></li>
+          <li><a href="#conferences" draggable="false"><span class="menu__label">Conferences &amp; Forums</span><span class="menu__num">[7]</span></a></li>
+          <li><a href="#publications" draggable="false"><span class="menu__label">Publications</span><span class="menu__num">[6]</span></a></li>
+          <li><a href="#teaching" draggable="false"><span class="menu__label">Teaching experience</span><span class="menu__num">[2]</span></a></li>
+          <li><a href="#awards" draggable="false"><span class="menu__label">Awards &amp; Medals</span><span class="menu__num">[4]</span></a></li>
         </ol>
       </nav>
 
