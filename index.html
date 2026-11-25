@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Niura Batrukova | Curriculum Vitae</title>
+  <meta name="description" content="Curriculum Vitae of Niura Batrukova, financial data and business processes analyst.">
+  <meta name="theme-color" content="#060709">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="stage">
+    <div class="desk">
+
+      <!-- Every element with data-drag can be grabbed and moved. -->
+      <div class="sheet sheet--back" data-drag aria-hidden="true"></div>
+
+      <!-- A5 sheet: Conferences & Forums. Lies under the intro sheet. -->
+      <article class="a5 a5--conferences" data-drag id="conferences">
+        <div class="a5__content">
+          <h2 class="a5__title">CONFERENCES &amp; FORUMS</h2>
+          <ul class="events">
+            <li class="event">
+              <p class="event__name">III International Symposium "Inventing the Future"</p>
+              <p class="event__details">November 12–13, 2026 — Participant</p>
+            </li>
+            <li class="event">
+              <p class="event__name">Forum "Platform Economy Day"</p>
+              <p class="event__details">November 11, 2026 — Attendee</p>
+            </li>
+            <li class="event">
+              <p class="event__name">International Forum "Russian Energy Week 2026"</p>
+              <p class="event__details">October 14–16, 2026 — Participant</p>
+            </li>
+            <li class="event">
+              <p class="event__name">Presentation of Russian Management Leadership Program for the Civil Service and Development Institutions of the Far East and the Arctic</p>
+              <p class="event__details">January 21, 2026 — Participant</p>
+            </li>
+            <li class="event">
+              <p class="event__name">International Scientific and Practical Conference "Asset Management 2025"</p>
+              <p class="event__details">December 9, 2025, Moscow State Institute of International Relations (University) of the Ministry of Foreign Affairs of the Russian Federation — Attendee</p>
+            </li>
+            <li class="event">
+              <p class="event__name">10th International Eastern Economic Forum (EEF)</p>
+              <p class="event__details">September 3–6, 2025 — Panel Discussion Attendee; Participant in negotiations with Chinese partners and teams of Russian regional governors</p>
+            </li>
+            <li class="event">
+              <p class="event__name">International Youth Scientific Forum "Lomonosov-2025"</p>
+              <p class="event__details">April 23–25, 2025, Lomonosov Moscow State University (LMSU) — Attendee</p>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="sheet sheet--intro" data-drag id="intro">
+        <img class="photo" src="img/photo.jpg" alt="" width="560" height="728" draggable="false">
+        <header class="bio">
+          <p class="bio__role">Head of Department / Team Leader</p>
+          <h1 class="bio__name">Batrukova Niura</h1>
+          <p class="bio__text">Financial data and business processes analyst, experienced in optimization and implementation of new effective development scenarios, in project management, control, and consulting.</p>
+        </header>
+      </article>
+
+      <nav class="card" data-drag aria-label="Sections">
+        <h2 class="card__title">Contents</h2>
+        <ol class="menu">
+          <li><a href="#conferences" draggable="false"><span class="menu__label">Conferences &amp; Articles</span><span class="menu__num">[01]</span></a></li>
+          <li><a href="#projects" draggable="false"><span class="menu__label">Projects</span><span class="menu__num">[02]</span></a></li>
+          <li><a href="#clubs" draggable="false"><span class="menu__label">Clubs</span><span class="menu__num">[03]</span></a></li>
+          <li><a href="#awards" draggable="false"><span class="menu__label">Awards &amp; Medals</span><span class="menu__num">[04]</span></a></li>
+          <li><a href="#competitions" draggable="false"><span class="menu__label">Competitions</span><span class="menu__num">[05]</span></a></li>
+        </ol>
+      </nav>
+
+      <aside class="note" data-drag>
+        <blockquote class="note__quote">
+          <p>Quote placeholder: one or two lines that sum her up.</p>
+        </blockquote>
+      </aside>
+
+    </div>
+  </main>
+
+  <button class="reset" type="button" hidden>Put back</button>
+
+  <script src="js/drag.js"></script>
+</body>
+</html>

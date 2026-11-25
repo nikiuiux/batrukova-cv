@@ -1,0 +1,323 @@
+/* ==========================================================================
+   Niura Batrukova, CV site. Intro screen.
+
+   How scaling works
+   -----------------
+   .desk is the A4 sheet area and a size container: 1cqw = 1% of the sheet
+   width. Everything is sized in cqw, so the whole composition scales as one
+   piece on any screen and keeps the A4 ratio. Same proportions as in Figma.
+
+   Conversion from the Figma frame (sheet 439.537 px wide): 1px = 0.22752cqw.
+
+   Dragging
+   --------
+   Elements with [data-drag] are moved by js/drag.js. It writes the offset
+   into --dx / --dy (in cqw), so a moved sheet stays in place when the window
+   is resized.
+   ========================================================================== */
+
+:root {
+  --bg: #060709;
+  --paper: #e5e6e8;
+  --card: #8baece;
+  --ink: #343434;
+  --ink-soft: rgba(0, 0, 0, 0.7);
+  --ink-faint: rgba(0, 0, 0, 0.5);
+  --card-ink: #1d2b38;
+  --menu-ink: #333a41;
+
+  --font-display: "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
+  --font-italic: "Bodoni 72", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
+  --font-title: "Instrument Serif", "Bodoni 72 Oldstyle", "Bodoni Moda", Georgia, serif;
+  --font-text: "Medeo Sans Display", "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.stage {
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* ---------- desk: the A4 area, size container for everything ---------- */
+
+.desk {
+  position: relative;
+  /* sheet takes 86.4% of screen height, or 86% of screen width if narrower
+     (the menu card sticks out 3.5% past the sheet's right edge, as in Figma) */
+  width: min(86vw, calc(100vh * 0.864 * 439.537 / 622));
+  width: min(86vw, calc(100dvh * 0.864 * 439.537 / 622));
+  margin-right: 3vw;
+  aspect-ratio: 439.537 / 622;
+  container-type: inline-size;
+}
+
+/* ---------- draggable behaviour ---------- */
+
+[data-drag] {
+  --dx: 0;
+  --dy: 0;
+  --rot: 0deg;
+  transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqw)) rotate(var(--rot));
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: scale 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-drag].is-dragging {
+  cursor: grabbing;
+  scale: 1.015;
+  box-shadow: 0 3cqw 6cqw rgba(0, 0, 0, 0.45);
+}
+
+.is-returning [data-drag] {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), scale 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ---------- sheets ---------- */
+
+.sheet {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  overflow: clip;
+}
+
+.sheet--back { --rot: 1deg; z-index: 1; }
+
+.sheet--intro {
+  z-index: 3;
+  box-shadow: 0 0.91cqw 1.05cqw rgba(60, 60, 60, 0.2);
+}
+
+.photo {
+  position: absolute;
+  left: 2.73cqw;
+  top: 3.185cqw;
+  width: 31.85cqw;
+  height: 41.41cqw;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* ---------- translucent note with the quote ---------- */
+
+.note {
+  position: absolute;
+  z-index: 5;
+  left: 4.55cqw;
+  top: 5.69cqw;
+  width: 45.5cqw;
+  height: 45.5cqw;
+  padding: 4.55cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(2.22cqw);
+  backdrop-filter: blur(2.22cqw);
+  overflow: clip;
+}
+
+.note::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .87 0 0 0 0 .87 0 0 0 0 .87 1 0 0 0 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.note__quote {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-size: 2.73cqw;
+  color: #2b2a28;
+}
+
+.note__quote p { margin: 0; }
+
+/* ---------- name and description ---------- */
+
+.bio {
+  position: absolute;
+  left: 4.55cqw;
+  bottom: 7.74cqw;
+  width: 80.1cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1cqw;
+}
+
+.bio__role,
+.bio__name,
+.bio__text { margin: 0; font-weight: 400; }
+
+.bio__role { font-size: 2.275cqw; color: var(--ink-faint); }
+
+.bio__name {
+  font-family: var(--font-display);
+  font-size: 7.638cqw;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.bio__text { font-size: 2.275cqw; color: var(--ink-soft); }
+
+/* ---------- menu card ---------- */
+
+.card {
+  position: absolute;
+  z-index: 4;
+  left: 59.38cqw;
+  top: 4.1cqw;
+  width: 44.14cqw;
+  height: 91cqw;
+  padding: 3.64cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--card);
+  box-shadow: 0 0.91cqw 0.91cqw rgba(183, 183, 183, 0.25);
+}
+
+.card__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: 4.78cqw;
+  line-height: 5.46cqw;
+  color: var(--card-ink);
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.91cqw;
+}
+
+.menu a {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.91cqw;
+  color: var(--menu-ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu__label { font-family: var(--font-display); font-size: 3.185cqw; }
+
+.menu__num {
+  font-family: var(--font-display);
+  font-size: 1.365cqw;
+  letter-spacing: -0.109cqw;
+  color: var(--card-ink);
+}
+
+.menu a:hover .menu__label {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+.menu a:focus-visible { outline: 2px solid var(--card-ink); outline-offset: 3px; }
+
+/* ---------- A5 sheets (Figma frame "A5 - 1 / paragraphs", 304.452 × 431.307)
+   Same Figma scale as the intro sheet: 1px = 0.22752cqw.
+   It lies under the intro sheet: drag the intro sheet away to see it. ---------- */
+
+.a5 {
+  position: absolute;
+  z-index: 2;
+  width: 69.27cqw;
+  height: 98.13cqw;
+  background: #f1f3f7;
+  box-shadow: 0 0.91cqw 1.05cqw rgba(60, 60, 60, 0.2);
+  overflow: clip;
+}
+
+.a5--conferences {
+  --rot: -3deg;
+  left: -8cqw;   /* peeks out to the left from under the intro sheet */
+  top: 30cqw;
+}
+
+.a5__content {
+  position: absolute;
+  left: 5.233cqw;
+  top: 6.598cqw;
+  width: 58.7cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 3.64cqw;
+}
+
+.a5__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 2.73cqw;
+  line-height: normal;
+  color: #343434;
+}
+
+.events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.82cqw;
+  font-family: var(--font-text);
+  font-size: 2.161cqw;
+  line-height: 2.844cqw;
+}
+
+.event { display: flex; flex-direction: column; gap: 0.455cqw; }
+.event p { margin: 0; }
+.event__name { font-weight: 500; color: #1d2b38; }
+.event__details { font-weight: 400; color: rgba(29, 43, 56, 0.6); }
+
+/* ---------- "put back" button, shows up after something was moved ---------- */
+
+.reset {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  translate: -50% 0;
+  z-index: 100;
+  padding: 8px 16px;
+  font: 13px/1 var(--font-text);
+  color: #c4daef;
+  background: transparent;
+  border: 1px solid rgba(196, 218, 239, 0.35);
+  cursor: pointer;
+}
+
+.reset:hover { border-color: rgba(196, 218, 239, 0.8); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-drag], .is-returning [data-drag] { transition: none; }
+}
