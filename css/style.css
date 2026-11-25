@@ -108,7 +108,7 @@ body {
   container-type: inline-size;
   --fit: 1;                         /* set by js: scales a wide composition down to fit the screen */
   scale: var(--fit);
-  transition: scale 0.8s cubic-bezier(0.22, 0.9, 0.25, 1);
+  transition: scale 0.8s cubic-bezier(0.22, 0.9, 0.25, 1), translate 0.8s cubic-bezier(0.22, 0.9, 0.25, 1);
 }
 
 /* ---------- draggable behaviour ---------- */

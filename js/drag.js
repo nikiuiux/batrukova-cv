@@ -88,10 +88,17 @@
   }
 
   function fit() {
-    if (desk.dataset.view === 'home') { desk.style.setProperty('--fit', 1); return; }
-    // scale the composition down when it is wider than the screen
+    if (desk.dataset.view === 'home') {
+      desk.style.setProperty('--fit', 1);
+      desk.style.translate = '';
+      return;
+    }
+    // scale the composition down when it is wider than the screen (phones, tablets)
     const w = desk.offsetWidth * SPREAD_WIDTH;
-    desk.style.setProperty('--fit', Math.min(1, (window.innerWidth * 0.96) / w).toFixed(3));
+    const k = Math.min(1, (window.innerWidth * 0.96) / w);
+    desk.style.setProperty('--fit', k.toFixed(3));
+    // a scaled composition is centred on the screen: its middle is 8.7% of a sheet left of the sheet's middle
+    desk.style.translate = k < 1 ? `${(desk.offsetWidth * 0.087 * k).toFixed(1)}px 0` : '';
   }
 
   function setView(view) {
