@@ -106,15 +106,20 @@ body {
   margin-right: 3vw;
   aspect-ratio: 439.537 / 622;
   container-type: inline-size;
+  --fit: 1;                         /* set by js: scales a wide composition down to fit the screen */
+  scale: var(--fit);
+  transition: scale 0.8s cubic-bezier(0.22, 0.9, 0.25, 1);
 }
 
 /* ---------- draggable behaviour ---------- */
 
 [data-drag] {
-  --dx: 0;
+  --dx: 0;          /* offset from dragging, set by js/drag.js */
   --dy: 0;
+  --sx: 0;          /* offset of the current view (menu composition), set below */
+  --sy: 0;
   --rot: 0deg;
-  transform: translate(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqw)) rotate(var(--rot));
+  transform: translate(calc((var(--dx) + var(--sx)) * 1cqw), calc((var(--dy) + var(--sy)) * 1cqw)) rotate(var(--rot));
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -131,6 +136,11 @@ body {
 
 .is-returning [data-drag] {
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), scale 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* switching views: sheets slide into the new composition */
+.is-moving [data-drag] {
+  transition: transform 0.8s cubic-bezier(0.22, 0.9, 0.25, 1), scale 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* ---------- sheets ---------- */
@@ -370,6 +380,41 @@ body {
 .pubs p { margin: 0 0 2.73cqw; }  /* 12px */
 .pubs p:last-child { margin-bottom: 0; }
 .pub__source { color: rgba(69, 69, 69, 0.6); }
+
+/* ---------- event photos (Figma "композиция", 181 × 227 each) ---------- */
+
+.snap {
+  position: absolute;
+  z-index: 2;
+  width: 41.25cqw;
+  height: 51.55cqw;
+  object-fit: cover;
+  display: block;
+  left: 46.22cqw;                   /* on the top-right corner of the conferences sheet */
+  top: 2.34cqw;
+}
+.snap--2 { --rot: 2.42deg; left: 47.33cqw; top: 1.5cqw; }
+
+/* ---------- views: what the desk looks like after a menu click
+   Offsets are from each element's home position, in cqw (Figma px × 0.22752),
+   taken from the Figma frame "композиция". ---------- */
+
+.desk:not([data-view="home"]) .sheet--intro,
+.desk:not([data-view="home"]) .sheet--back { --sx: -77.36; --sy: 71.21; }
+.desk:not([data-view="home"]) .sheet--intro { cursor: pointer; z-index: 1; }
+.desk:not([data-view="home"]) .sheet--back { z-index: 0; }
+.desk:not([data-view="home"]) .note { --sx: -77.58; --sy: 2.5; --rot: -0.2deg; }
+.desk:not([data-view="home"]) .card { --sx: 52.1; --sy: -1.14; }
+
+/* Conferences & Forums in the middle, photos on its corner, publications under it */
+[data-view="conferences"] .page--conferences { --sx: 11.275; --sy: 0.55; --rot: 0deg; z-index: 3; }
+[data-view="conferences"] .snap { --sx: 11.275; --sy: 0.55; z-index: 3; }
+[data-view="conferences"] .page--publications { --sx: 10.3; --sy: 7; --rot: 1.5deg; }
+
+/* Publications in the middle, conferences and its photos tucked under it */
+[data-view="publications"] .page--publications { --sx: 8.275; --sy: 1; --rot: 0deg; z-index: 3; }
+[data-view="publications"] .page--conferences { --sx: 15; --sy: 5; --rot: -1.5deg; }
+[data-view="publications"] .snap { --sx: 8; --sy: 6; --rot: -1.5deg; }   /* hidden under the sheet */
 
 /* ---------- "put back" button, shows up after something was moved ---------- */
 

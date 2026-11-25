@@ -70,31 +70,62 @@
     }, true);
   });
 
-  // a menu link whose target is a sheet on the desk brings that sheet on top
-  document.querySelectorAll('.menu a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (!target || !target.hasAttribute('data-drag')) return;
-      e.preventDefault();
-      target.style.zIndex = ++top;
-      // the menu card stays above the sheet it opened, so the next item is still clickable
-      const card = a.closest('[data-drag]');
-      if (card) card.style.zIndex = ++top;
-      target.animate(
-        [{ scale: 1 }, { scale: 1.02 }, { scale: 1 }],
-        { duration: 350, easing: 'ease-out' }
-      );
-    });
-  });
+  // ---------- views ----------
+  // A menu click switches the desk to that section's composition (see "views" in style.css):
+  // the intro sheet slides down, the note and the menu move aside, the section sheet comes to the middle.
+  // A click on the intro sheet, Esc or "Put back" returns to the start.
 
-  resetBtn.addEventListener('click', () => {
-    desk.classList.add('is-returning');
+  // width of the widest composition, in sheet widths (Figma "композиция": 1024px / 439.5px)
+  const SPREAD_WIDTH = 2.33;
+
+  function clearManual() {
     items.forEach(el => {
       el.style.removeProperty('--dx');
       el.style.removeProperty('--dy');
       el.style.removeProperty('z-index');
     });
     top = Math.max(...items.map(el => parseInt(getComputedStyle(el).zIndex, 10) || 0));
+  }
+
+  function fit() {
+    if (desk.dataset.view === 'home') { desk.style.setProperty('--fit', 1); return; }
+    // scale the composition down when it is wider than the screen
+    const w = desk.offsetWidth * SPREAD_WIDTH;
+    desk.style.setProperty('--fit', Math.min(1, (window.innerWidth * 0.96) / w).toFixed(3));
+  }
+
+  function setView(view) {
+    if (desk.dataset.view === view) return;
+    desk.classList.remove('is-returning');
+    desk.classList.add('is-moving');
+    clearManual();
+    desk.dataset.view = view;
+    fit();
+    resetBtn.hidden = view === 'home';
+    clearTimeout(setView.t);
+    setView.t = setTimeout(() => desk.classList.remove('is-moving'), 850);
+  }
+
+  document.querySelectorAll('.menu a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (!target || !target.hasAttribute('data-drag')) return; // section without a sheet yet
+      e.preventDefault();
+      setView(id);
+    });
+  });
+
+  // back to the start: click the intro sheet (not a drag), or press Esc
+  const intro = document.getElementById('intro');
+  intro.addEventListener('click', () => { if (desk.dataset.view !== 'home') setView('home'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setView('home'); });
+  window.addEventListener('resize', fit);
+
+  resetBtn.addEventListener('click', () => {
+    if (desk.dataset.view !== 'home') { setView('home'); return; }
+    desk.classList.add('is-returning');
+    clearManual();
     resetBtn.hidden = true;
   });
 })();
