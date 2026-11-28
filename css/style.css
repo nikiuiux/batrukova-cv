@@ -437,6 +437,17 @@ b { font-weight: 600; }
 }
 .reset:hover { border-color: rgba(196, 218, 239, 0.8); }
 
+/* ---------- phone: no dragging, swipe the pile, menu waits at the right edge ---------- */
+
+@media (max-width: 640px) {
+  [data-drag] { cursor: default; touch-action: pan-y pinch-zoom; }
+  .desk { touch-action: pan-y pinch-zoom; }
+  .card { cursor: pointer; }
+  .card > * { transition: opacity 0.3s ease; }
+  .card:not(.is-open) > * { opacity: 0; }     /* closed: just a blue strip at the edge */
+  .reset { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-drag], .is-returning [data-drag], .is-moving [data-drag], .desk { transition: none; }
 }

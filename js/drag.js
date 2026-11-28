@@ -6,6 +6,8 @@
   const items = [...desk.querySelectorAll('[data-drag]')];
   const resetBtn = document.querySelector('.reset');
   const THRESHOLD = 4; // px of movement before it counts as a drag, not a click
+  const phoneQuery = window.matchMedia('(max-width: 640px)');
+  const isPhone = () => phoneQuery.matches;
 
   let top = Math.max(...items.map(el => parseInt(getComputedStyle(el).zIndex, 10) || 0));
 
@@ -14,7 +16,7 @@
     let suppressClick = false;
 
     el.addEventListener('pointerdown', e => {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || isPhone()) return;   // on a phone sheets are swiped, not dragged
       suppressClick = false;
       desk.classList.remove('is-returning', 'is-moving');
       start = {
@@ -215,18 +217,24 @@
       const id = a.getAttribute('href').slice(1);
       if (!CENTER[id]) return;
       e.preventDefault();
+      if (isPhone()) return phoneOpen(id);
       setView(id);
     });
   });
 
   // First sheet aside: a click on it brings everything back
   document.getElementById('intro').addEventListener('click', e => {
-    if (view !== 'home' && !e.target.closest('a')) setView('home');
+    if (!isPhone() && view !== 'home' && !e.target.closest('a')) setView('home');
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && view !== 'home') setView('home'); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (isPhone()) phoneMenu(false);
+    else if (view !== 'home') setView('home');
+  });
 
   // the menu card moved by hand stays where it was put
   card.addEventListener('pointerup', () => {
+    if (isPhone()) return;
     if (!card.classList.contains('is-dragging') && !(parseFloat(card.style.getPropertyValue('--dx')) || parseFloat(card.style.getPropertyValue('--dy')))) return;
     if (!cardPinned) {
       cardPinned = true;
@@ -240,7 +248,7 @@
     }
   }, true);
 
-  window.addEventListener('resize', fit);
+  window.addEventListener('resize', () => { if (isPhone()) phoneCard(); else fit(); });
 
   // "Download CV" without a file yet does nothing
   document.querySelectorAll('a[aria-disabled="true"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
@@ -253,4 +261,156 @@
     desk.classList.add('is-returning');
     top = Math.max(...items.map(el => parseInt(getComputedStyle(el).zIndex, 10) || 0));
   });
+
+  // ==========================================================================
+  // Phone. No spreading out: the sheets stay in the pile of the first frame and
+  // change places in it. The open sheet is on top; a swipe tucks it under the pile
+  // (left = next, right = back). The menu card waits as a blue strip at the right
+  // edge; a tap slides it out.
+  // ==========================================================================
+
+  const ORDER = ['intro', 'work', 'teaching', 'education', 'conferences', 'publications', 'awards'];
+  let deck = ORDER.slice();                  // deck[0] lies on top, the rest in menu order
+  let menuOpen = false;
+  let busy = false;
+
+  // a sheet together with what lies on it (photos on Conferences)
+  const withPhotos = k => [document.getElementById(k), ...(k === 'conferences' ? snaps : [])];
+
+  function phoneLayout() {
+    deck.forEach((k, i) => {
+      const el = document.getElementById(k);
+      const to = i === 0 ? (CENTER[k] || HOME[k]) : HOME[k];
+      place(el, HOME[k], to);
+      el.style.zIndex = (ORDER.length - i) * 10;
+      if (k === 'conferences') confNow = i === 0 ? to.slice() : null;
+    });
+    placeSnaps(true);
+    const cz = parseInt(document.getElementById('conferences').style.zIndex, 10);
+    snaps.forEach((el, i) => { el.style.zIndex = cz + 1 + i; });
+  }
+
+  function phoneCard() {
+    const unit = desk.offsetWidth / 100;
+    const right = window.innerWidth - desk.getBoundingClientRect().left;   // screen edge, px from the sheet corner
+    const x = menuOpen ? right - card.offsetWidth - 12 : right - 22;      // 22px of blue stays on screen
+    card.style.setProperty('--sx', (x / unit - 56.571).toFixed(3));       // 56.571cqw = card home left
+    card.style.setProperty('--sy', 0);
+    card.style.zIndex = 200;
+    card.classList.toggle('is-open', menuOpen);
+  }
+
+  function phoneMenu(open) {
+    menuOpen = open;
+    phoneCard();
+  }
+
+  // bring a sheet on top: it slides in from the side (from = -1 left, 1 right)
+  function phoneOpen(id, from = 1) {
+    phoneMenu(false);
+    if (deck[0] === id || busy) return;
+    busy = true;
+    const el = document.getElementById(id);
+    // the pile keeps the menu order: after the open sheet come the next ones, so a swipe
+    // left always shows the next section and a swipe right the previous one
+    const i = ORDER.indexOf(id);
+    deck = ORDER.slice(i).concat(ORDER.slice(0, i));
+    // it lies under the pile, so it can be moved aside unseen
+    const startX = 110 * from + (((CENTER[id] || HOME[id])[0] - HOME[id][0]) / 5.25);
+    withPhotos(id).forEach(n => {
+      n.style.transition = 'none';
+      n.style.setProperty('--sx', startX.toFixed(3));
+      n.style.zIndex = 100;
+    });
+    void el.offsetWidth;
+    withPhotos(id).forEach(n => { n.style.transition = ''; });
+    phoneLayout();
+    setTimeout(() => { phoneLayout(); busy = false; }, 800);
+  }
+
+  // tuck the top sheet under the pile
+  function phoneNext() {
+    if (busy) return;
+    busy = true;
+    const k = deck[0];
+    const els = withPhotos(k);
+    els.forEach(n => {
+      n.classList.remove('is-dragging');
+      n.style.transition = 'translate 0.35s cubic-bezier(0.4, 0, 0.2, 1), rotate 0.35s ease';
+      n.style.setProperty('--dx', -110);
+    });
+    setTimeout(() => {
+      deck = [...deck.slice(1), k];
+      els.forEach(n => { n.style.transition = ''; n.style.removeProperty('--dx'); });
+      phoneLayout();
+      setTimeout(() => { busy = false; }, 500);
+    }, 350);
+  }
+
+  function phoneBack() {
+    withPhotos(deck[0]).forEach(n => { n.classList.remove('is-dragging'); n.style.removeProperty('--dx'); });
+    phoneOpen(deck[deck.length - 1], -1);
+  }
+
+  // swipe
+  let swipe = null;
+  desk.addEventListener('pointerdown', e => {
+    if (!isPhone() || busy || card.contains(e.target)) return;
+    if (menuOpen) { phoneMenu(false); return; }
+    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, on: false };
+  });
+  desk.addEventListener('pointermove', e => {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const mx = e.clientX - swipe.x, my = e.clientY - swipe.y;
+    if (!swipe.on) {
+      if (Math.abs(mx) < 10 || Math.abs(mx) < Math.abs(my)) return;
+      swipe.on = true;
+      desk.setPointerCapture(e.pointerId);
+      withPhotos(deck[0]).forEach(n => n.classList.add('is-dragging'));
+    }
+    withPhotos(deck[0]).forEach(n => n.style.setProperty('--dx', (mx / (desk.offsetWidth / 100)).toFixed(3)));
+  });
+  const swipeEnd = e => {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    const mx = e.clientX - swipe.x;
+    const on = swipe.on;
+    swipe = null;
+    if (!on) return;
+    if (mx < -50) return phoneNext();
+    if (mx > 50) return phoneBack();
+    withPhotos(deck[0]).forEach(n => { n.classList.remove('is-dragging'); n.style.removeProperty('--dx'); });
+  };
+  desk.addEventListener('pointerup', swipeEnd);
+  desk.addEventListener('pointercancel', swipeEnd);
+
+  // the closed menu strip opens on a tap, its links wait until it is out
+  card.addEventListener('click', e => {
+    if (!isPhone() || menuOpen) return;
+    e.preventDefault();
+    e.stopPropagation();
+    phoneMenu(true);
+  }, true);
+  document.addEventListener('click', e => {
+    if (isPhone() && menuOpen && !card.contains(e.target)) phoneMenu(false);
+  });
+
+  // switching between phone and desktop (turning a tablet, resizing a window)
+  function setMode() {
+    items.forEach(el => {
+      clearHand(el);
+      unplace(el);
+      el.style.removeProperty('--delay');
+      el.style.transition = '';
+      el.classList.remove('is-dragging', 'is-open');
+    });
+    desk.classList.remove('is-moving', 'is-returning');
+    view = 'home'; seen = []; cardPinned = false; confNow = null;
+    desk.dataset.view = 'home';
+    desk.style.setProperty('--fit', 1);
+    resetBtn.hidden = true;
+    deck = ORDER.slice(); menuOpen = false;
+    if (isPhone()) { phoneLayout(); phoneCard(); }
+  }
+  phoneQuery.addEventListener('change', setMode);
+  if (isPhone()) setMode();
 })();
