@@ -31,6 +31,13 @@
       el.style.zIndex = ++top;
       // the sheet on top is always level: a clicked sheet turns straight
       if (el.classList.contains('sheet')) straighten(el);
+      // photos lying on Conferences travel with it (not the ones moved off it by hand)
+      start.carry = el.id === 'conferences'
+        ? snaps.filter(n => !n.dataset.loose).map(n => {
+            n.style.zIndex = ++top;
+            return { n, dx: parseFloat(n.style.getPropertyValue('--dx')) || 0, dy: parseFloat(n.style.getPropertyValue('--dy')) || 0 };
+          })
+        : [];
     });
 
     el.addEventListener('pointermove', e => {
@@ -44,9 +51,15 @@
         // capture only once it is a real drag, so plain clicks on menu links still work
         el.setPointerCapture(e.pointerId);
         el.classList.add('is-dragging');
+        start.carry.forEach(c => c.n.classList.add('is-dragging'));
+        if (el.dataset.with) el.dataset.loose = '1';   // a photo taken off the sheet by hand stays where it is put
       }
       el.style.setProperty('--dx', (start.dx + mx / start.unit).toFixed(3));
       el.style.setProperty('--dy', (start.dy + my / start.unit).toFixed(3));
+      start.carry.forEach(c => {
+        c.n.style.setProperty('--dx', (c.dx + mx / start.unit).toFixed(3));
+        c.n.style.setProperty('--dy', (c.dy + my / start.unit).toFixed(3));
+      });
     });
 
     const end = e => {
@@ -58,6 +71,7 @@
         resetBtn.hidden = false;
       }
       el.classList.remove('is-dragging');
+      start.carry.forEach(c => c.n.classList.remove('is-dragging'));
       if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
       start = null;
     };
@@ -127,6 +141,7 @@
     ['--sx', '--sy', '--rot', 'z-index'].forEach(p => el.style.removeProperty(p));
   }
   function clearHand(el) {
+    delete el.dataset.loose;
     el.style.removeProperty('--dx');
     el.style.removeProperty('--dy');
     el.style.removeProperty('z-index');
@@ -142,9 +157,8 @@
   function placeSnaps(all) {
     const conf = document.getElementById('conferences');
     snaps.forEach((el, i) => {
-      const byHand = el.style.getPropertyValue('--dx') || el.style.getPropertyValue('--dy');
-      if (!all && byHand) return;            // a photo moved by hand stays where it was put
-      if (all) clearHand(el);
+      if (!all && el.dataset.loose) return;  // a photo moved off the sheet by hand stays where it was put
+      if (all) { clearHand(el); delete el.dataset.loose; }
       el.style.setProperty('--delay', conf.style.getPropertyValue('--delay') || '0s');
       const sp = spread && SPREAD[i];
       if (!confNow && !sp) { if (all) unplace(el); return; }
@@ -311,6 +325,16 @@
   }, true);
 
   window.addEventListener('resize', () => { if (isPhone()) phoneCard(); else fit(); });
+
+  // Analytics (GoatCounter, script in index.html): which sections are opened and CV downloads.
+  // Without the script nothing is sent.
+  function track(name) {
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, title: name, event: true }); } catch (_) {}
+  }
+  document.querySelectorAll('.menu a[href^="#"]').forEach(a => a.addEventListener('click', () => track('open-' + a.getAttribute('href').slice(1))));
+  document.querySelectorAll('.contacts__cv').forEach(a => a.addEventListener('click', () => track('download-cv')));
+  document.querySelectorAll('.contacts a[href^="mailto"], .contacts a[href*="t.me"], .contacts a[href*="instagram"]').forEach(a =>
+    a.addEventListener('click', () => track('contact-' + (a.href.startsWith('mailto') ? 'email' : a.href.includes('t.me') ? 'telegram' : 'instagram'))));
 
   // "Download CV" without a file yet does nothing
   document.querySelectorAll('a[aria-disabled="true"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
