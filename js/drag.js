@@ -265,13 +265,15 @@
   // ==========================================================================
   // Phone. No spreading out: the sheets stay in the pile of the first frame and
   // change places in it. The open sheet is on top; a swipe tucks it under the pile
-  // (left = next, right = back). The menu card waits as a blue strip at the right
-  // edge; a tap slides it out.
+  // (left = next, right = back). The menu card lies on the pile in the first frame;
+  // after the first section is opened it waits as a blue strip at the right edge,
+  // a tap slides it out.
   // ==========================================================================
 
   const ORDER = ['intro', 'work', 'teaching', 'education', 'conferences', 'publications', 'awards'];
   let deck = ORDER.slice();                  // deck[0] lies on top, the rest in menu order
   let menuOpen = false;
+  let cardHome = true;                       // first frame: the card lies on the pile as on desktop
   let busy = false;
 
   // a sheet together with what lies on it (photos on Conferences)
@@ -291,6 +293,12 @@
   }
 
   function phoneCard() {
+    card.style.zIndex = 200;
+    if (cardHome) {                          // until the first section is opened
+      ['--sx', '--sy'].forEach(p => card.style.removeProperty(p));
+      card.classList.add('is-open');
+      return;
+    }
     const unit = desk.offsetWidth / 100;
     const right = window.innerWidth - desk.getBoundingClientRect().left;   // screen edge, px from the sheet corner
     const x = menuOpen ? right - card.offsetWidth - 12 : right - 22;      // 22px of blue stays on screen
@@ -301,12 +309,14 @@
   }
 
   function phoneMenu(open) {
+    if (cardHome) return;
     menuOpen = open;
     phoneCard();
   }
 
   // bring a sheet on top: it slides in from the side (from = -1 left, 1 right)
   function phoneOpen(id, from = 1) {
+    if (cardHome) { cardHome = false; phoneCard(); }   // from now on the menu is a strip at the edge
     phoneMenu(false);
     if (deck[0] === id || busy) return;
     busy = true;
@@ -332,6 +342,7 @@
   function phoneNext() {
     if (busy) return;
     busy = true;
+    if (cardHome) { cardHome = false; phoneCard(); }
     const k = deck[0];
     const els = withPhotos(k);
     els.forEach(n => {
@@ -385,7 +396,7 @@
 
   // the closed menu strip opens on a tap, its links wait until it is out
   card.addEventListener('click', e => {
-    if (!isPhone() || menuOpen) return;
+    if (!isPhone() || menuOpen || cardHome) return;
     e.preventDefault();
     e.stopPropagation();
     phoneMenu(true);
@@ -408,7 +419,7 @@
     desk.dataset.view = 'home';
     desk.style.setProperty('--fit', 1);
     resetBtn.hidden = true;
-    deck = ORDER.slice(); menuOpen = false;
+    deck = ORDER.slice(); menuOpen = false; cardHome = true;
     if (isPhone()) { phoneLayout(); phoneCard(); }
   }
   phoneQuery.addEventListener('change', setMode);
