@@ -10,41 +10,76 @@
   <!-- ITC Bodoni Seventytwo from Adobe Fonts (web project "Batrukova CV"). Licence: served by Adobe only. -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/mov4rsg.css">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <main class="stage">
+    <!-- The desk is the size of one A4 sheet (Figma "First", 525 × 737).
+         Sheets are listed bottom to top, as in the Figma frame "дефолтное состояние".
+         Every element with data-drag can be grabbed and moved. -->
     <div class="desk" data-view="home">
 
-      <!-- Every element with data-drag can be grabbed and moved. -->
-      <div class="sheet sheet--back" data-drag aria-hidden="true"></div>
-
-      <!-- Section sheets from Figma section "handoff". They lie under the intro sheet;
-           drag the intro sheet away or click a menu item to bring one on top. -->
-
-      <article class="page page--publications" data-drag id="publications">
-        <h2 class="page__title">Publications</h2>
-        <div class="pubs">
-          <p><span class="pub__title">Public-private partnership: risks of&nbsp;implementing infrastructure projects, 2021</span><br>
-             <span class="pub__source">Actual Issues of&nbsp;Modern Economy, No.&nbsp;2, pp.&nbsp;364–368, 2021 (In&nbsp;Russ)</span></p>
-          <p><span class="pub__title">Financing Infrastructure Projects in&nbsp;Public-Private Partnerships: The&nbsp;UK Experience</span>
-             <span class="pub__source">Economics and&nbsp;Management: Problems, Solutions, Vol.&nbsp;1, No.&nbsp;1 (121), pp.&nbsp;123–127, 2022. (In&nbsp;Russ)</span></p>
-          <p><span class="pub__title">Financing Infrastructure Projects Implemented Using Public-Private Partnership Mechanisms</span>
-             <span class="pub__source">Financial Economy, Vol.&nbsp;5, No.&nbsp;5, pp.&nbsp;372–375, 2022. (In&nbsp;Russ)</span></p>
-          <p><span class="pub__title">Taxation in&nbsp;the&nbsp;Implementation of&nbsp;Public-Private Partnership Projects</span><br>
-             <span class="pub__source">Economics and&nbsp;Management, Vol.&nbsp;29, No.&nbsp;3, pp.&nbsp;345–351, 2023. (In&nbsp;Russ)</span></p>
-          <p><span class="pub__title">Tax Incentives in&nbsp;the&nbsp;System of&nbsp;State Support Measures for&nbsp;Industrial Development</span><br>
-             <span class="pub__source">Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;2 (55), pp.&nbsp;295–299, 2023. (In&nbsp;Russ)</span></p>
-          <p><span class="pub__title">Financing Instruments in&nbsp;Structuring Public-Private Partnership Projects</span><br>
-             <span class="pub__source">Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;5 (58), 2023. (In&nbsp;Russ)</span></p>
+      <!-- Education: not placed in the default frame yet, lies at the very bottom -->
+      <article class="sheet sheet--education" data-drag id="education">
+        <h2 class="sheet__title">Education</h2>
+        <div class="edu">
+          <div class="edu__degrees">
+            <p><span class="ink">Novosibirsk State University of&nbsp;Economics and&nbsp;Management</span><br>
+               Faculty of&nbsp;Corporate Economics and&nbsp;Entrepreneurship, postgraduate school (2021–2024)</p>
+            <p><span class="ink">Financial University under the&nbsp;Government of&nbsp;the&nbsp;Russian Federation:</span><br>
+               Faculty of&nbsp;Law, Master of&nbsp;Law (2015–2017)<br>
+               Faculty of&nbsp;Taxes and&nbsp;Taxation, Specialist degree in&nbsp;Economics, (2010–2015)</p>
+          </div>
+          <div class="edu__courses">
+            <p class="edu__label">Courses and professional development</p>
+            <div class="edu__list">
+              <p><span class="ink">“Master of&nbsp;Negotiation: Technologies of&nbsp;Influence”</span>, MGIMO University professional development program, 2023</p>
+              <p><span class="ink">“School 21”</span>, École 42 / Sberbank programming school, 2019–2023</p>
+              <p><span class="ink">“Personal Effectiveness and&nbsp;Managerial Skills”</span>, City Business School, 2020</p>
+              <p><span class="ink">“Business Valuation”</span>, Business Club MGIMO course, 2019</p>
+              <p><span class="ink">“Introduction to&nbsp;Corporate Finance”</span>, Business Club MGIMO course, 2019</p>
+              <p><span class="ink">“Problem Solving with&nbsp;Excel”</span>, Course, 2018</p>
+              <p><span class="ink">“Taxation of&nbsp;Company’s Profit”</span>, Professional development program, 2017</p>
+              <p><span class="ink">The KPMG Foundation Program</span>, 2017</p>
+            </div>
+          </div>
         </div>
       </article>
 
-      <article class="page page--conferences" data-drag id="conferences">
-        <h2 class="page__title">Conferences &amp; Forums</h2>
+      <aside class="sheet sheet--awards" data-drag id="awards">
+        <h2 class="sheet__title">Awards</h2>
+        <div class="awards">
+          <p>Finalist, All-Russian leadership program <b>“Muravyov-Amursky 2030”</b></p>
+          <p>Winner of&nbsp;several amateur women’s team chess tournaments</p>
+          <p>Participant in&nbsp;a&nbsp;social project of&nbsp;the&nbsp;Moscow region, that received <b>“Replicability” award from&nbsp;UN Economic Commission for&nbsp;Europe</b>.</p>
+          <p>Prize-winner, Dynamo sports club competitions <b>among the&nbsp;Russia financial authorities</b></p>
+          <p>Founder of&nbsp;the&nbsp;chess club at&nbsp;the&nbsp;Financial University under the&nbsp;Government of&nbsp;the&nbsp;Russian Federation</p>
+        </div>
+      </aside>
+
+      <article class="sheet sheet--publications" data-drag id="publications">
+        <h2 class="sheet__title sheet__title--pinned">Publications</h2>
+        <div class="entries">
+          <p><span class="ink">Public-Private Partnership: Risks of&nbsp;Implementing Infrastructure Projects</span><br>
+             Actual Issues of&nbsp;Modern Economy, No.&nbsp;2, pp.&nbsp;364–368, 2021 (In&nbsp;Russ.)</p>
+          <p><span class="ink">Financing Infrastructure Projects in&nbsp;Public-Private Partnerships: The&nbsp;UK Experience</span><br>
+             Economics and&nbsp;Management: Problems, Solutions, Vol.&nbsp;1, No.&nbsp;1 (121), pp.&nbsp;123–127, 2022 (In&nbsp;Russ.)</p>
+          <p><span class="ink">Financing Infrastructure Projects Implemented Using Public-Private Partnership Mechanisms</span><br>
+             Financial Economy, Vol.&nbsp;5, No.&nbsp;5, pp.&nbsp;372–375, 2022 (In&nbsp;Russ.)</p>
+          <p><span class="ink">Taxation in&nbsp;the&nbsp;Implementation of&nbsp;Public-Private Partnership Projects</span><br>
+             Economics and&nbsp;Management, Vol.&nbsp;29, No.&nbsp;3, pp.&nbsp;345–351, 2023 (In&nbsp;Russ.)</p>
+          <p><span class="ink">Tax Incentives in&nbsp;the&nbsp;System of&nbsp;State Support Measures for&nbsp;Industrial Development</span><br>
+             Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;2 (55), pp.&nbsp;295–299, 2023 (In&nbsp;Russ.)</p>
+          <p><span class="ink">Financing Instruments in&nbsp;Structuring Public-Private Partnership Projects</span><br>
+             Bulletin of&nbsp;the&nbsp;Academy of&nbsp;Knowledge, No.&nbsp;5 (58), 2023 (In&nbsp;Russ.)</p>
+        </div>
+      </article>
+
+      <article class="sheet sheet--conferences" data-drag id="conferences">
+        <h2 class="sheet__title">Conferences &amp; Forums</h2>
         <ul class="events">
           <li class="event event--key">
-            <p class="event__name event__name--narrow">III International Symposium “Inventing the&nbsp;Future”</p>
+            <p class="event__name nowrap">3d International Symposium “Inventing the&nbsp;Future”</p>
             <p class="event__details">November 12–13, 2026&nbsp;— Participant</p>
           </li>
           <li class="event">
@@ -56,60 +91,189 @@
             <p class="event__details">October 14–16, 2026&nbsp;— Participant</p>
           </li>
           <li class="event">
-            <p class="event__name event__name--wide">Presentation of&nbsp;Russian Management Leadership Program for&nbsp;the&nbsp;Civil Service and&nbsp;Development Institutions of&nbsp;the&nbsp;Far East and&nbsp;the&nbsp;Arctic</p>
+            <p class="event__name">Presentation of&nbsp;Russian Management Leadership Program for&nbsp;the&nbsp;Civil Service and&nbsp;Development Institutions of&nbsp;the&nbsp;Far East and&nbsp;the&nbsp;Arctic</p>
             <p class="event__details">January 21, 2026&nbsp;— Participant</p>
           </li>
           <li class="event">
-            <p class="event__name">International Scientific and&nbsp;Practical Conference “Asset Management 2025”</p>
-            <p class="event__details">December 9, 2025, Moscow State Institute of&nbsp;International Relations (University) of&nbsp;the&nbsp;Ministry of&nbsp;Foreign Affairs of&nbsp;the&nbsp;Russian Federation&nbsp;— Attendee</p>
+            <p class="event__name">International Scientific and&nbsp;Practical Conference<br>“Asset Management 2025”</p>
+            <p class="event__details">December 9, 2025, Moscow State Institute of&nbsp;International Relations (University) of&nbsp;the&nbsp;Ministry of&nbsp;Foreign Affairs of&nbsp;the&nbsp;Russian Federation<br>— Attendee</p>
           </li>
           <li class="event event--key">
             <p class="event__name">10th International Eastern Economic Forum (EEF)</p>
-            <p class="event__details">September 3–6, 2025&nbsp;— Panel Discussion Attendee; Participant in&nbsp;negotiations with&nbsp;Chinese partners and&nbsp;teams of&nbsp;Russian regional governors</p>
+            <p class="event__details event__details--narrow">September 3–6, 2025&nbsp;— Panel Discussion Attendee; Participant in&nbsp;negotiations with&nbsp;Chinese partners and&nbsp;teams of&nbsp;Russian regional governors</p>
           </li>
           <li class="event event--key">
             <p class="event__name">International Youth Scientific Forum “Lomonosov-2025”</p>
-            <p class="event__details">April 23–25, 2025, Lomonosov Moscow State University (LMSU)&nbsp;— Attendee</p>
+            <p class="event__details">April 23–25, 2025, Lomonosov Moscow State University (LMSU)<br>— Attendee</p>
           </li>
         </ul>
       </article>
 
-      <!-- Photos from events. They belong to the Conferences & Forums sheet and move with it. -->
-      <img class="snap snap--1" data-drag src="img/events/muravyov-amursky-2030.jpg" alt="At the Muravyov-Amursky 2030 forum" width="621" height="776" draggable="false">
-      <img class="snap snap--4" data-drag src="img/events/eef-2025-hall.jpg" alt="At the Eastern Economic Forum 2025, plenary hall" width="621" height="776" draggable="false">
-      <img class="snap snap--3" data-drag src="img/events/inventing-the-future.jpg" alt="At the III International Symposium “Inventing the Future”" width="621" height="776" draggable="false">
-      <img class="snap snap--2" data-drag src="img/events/eef-2025.jpg" alt="At the 10th Eastern Economic Forum" width="621" height="776" draggable="false">
-
-      <article class="sheet sheet--intro" data-drag id="intro">
-        <img class="photo" src="img/photo.jpg" alt="" width="560" height="728" draggable="false">
-        <header class="bio">
-          <p class="bio__role">Head of Department / Team Leader</p>
-          <h1 class="bio__name">Batrukova Niura</h1>
-          <p class="bio__text">Financial data and business processes analyst, experienced in optimization and implementation of new effective development scenarios, in project management, control, and consulting.</p>
-        </header>
+      <article class="sheet sheet--teaching" data-drag id="teaching">
+        <h2 class="sheet__title sheet__title--pinned">Teaching experience</h2>
+        <div class="entries entries--muted">
+          <p><span class="ink">Moscow State Institute of&nbsp;International Relations (University) of&nbsp;the&nbsp;Ministry of&nbsp;Foreign Affairs of&nbsp;the&nbsp;Russian Federation (MGIMO University)</span><br>
+             Lecturer (2026)<br>
+             Lectured bachelor students on&nbsp;“Mechanisms for&nbsp;supporting investment projects in&nbsp;project financing and&nbsp;PPP” within the&nbsp;discipline “Basic financial instruments of&nbsp;PPP”</p>
+          <p><span class="ink">The&nbsp;Russian Presidential Academy of&nbsp;National Economy and&nbsp;Public Administration (RANEPA)</span><br>
+             Lecturer (2021–2022)<br>
+             Taught accounting, tax accounting, tax offenses and&nbsp;tax law in&nbsp;training in&nbsp;professional retraining courses</p>
+        </div>
       </article>
 
+      <article class="sheet sheet--work" data-drag id="work">
+        <h2 class="sheet__title work__title">Work experience</h2>
+        <div class="work">
+          <section class="work__main">
+            <h3 class="work__label">Work experience</h3>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">GPB Infrastructure Holding LLC</p>
+                <p class="job__role">Project Manager (2024–2026)</p>
+              </div>
+              <div class="job__items">
+                <p>Contributed to&nbsp;the&nbsp;development transport infrastructure (bridges, airports, roads) with&nbsp;total investments exceeding RUB 100&nbsp;billion including preparing financing, risk analysis, agreements and&nbsp;financial models</p>
+                <p>Coordinated experts in&nbsp;negotiating and&nbsp;signing contract with&nbsp;contractors and&nbsp;partners</p>
+                <p>Monitored the&nbsp;activities of&nbsp;subsidiaries in&nbsp;the&nbsp;implementation of&nbsp;projects, including analysis of&nbsp;budgets, financial and&nbsp;legal risks to&nbsp;support managerial decisions by&nbsp;shareholders</p>
+                <p>Supported bank financing of&nbsp;up RUB 500&nbsp;million, analysis and&nbsp;control of&nbsp;work results</p>
+                <p>Held meetings with&nbsp;partners, a&nbsp;financing organization, and&nbsp;prepared materials for&nbsp;financing</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">VEB Infrastructure JSC</p>
+                <p class="job__role">Investment Advisor (June 2022 – July 2023)</p>
+              </div>
+              <div class="job__items">
+                <p>Conducted successful negotiations and&nbsp;meetings in&nbsp;support of&nbsp;3&nbsp;federal and&nbsp;regional social investment projects</p>
+                <p>Received obtained internal corporate approvals for&nbsp;transactions, prepared investment justifications, protocols</p>
+                <p>Prepared analytical and&nbsp;presentation materials, explanatory notes, letters to&nbsp;federal/regional executive authorities to&nbsp;promote 9&nbsp;investment projects, including public-private partnership projects</p>
+                <p>Analysed of&nbsp;infrastructure financing opportunities, including financial models, financial and&nbsp;technical reporting</p>
+                <p>Prepared tender documentation and&nbsp;supported a&nbsp;federal project with&nbsp;investment of&nbsp;over RUB 4.5&nbsp;billion</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">Project Management (Russian Railways, Mortgage, Rusnano, Sberbank)</p>
+                <p class="job__role">Financial, Systems, Business Analyst (2021–2022)</p>
+              </div>
+              <div class="job__items">
+                <p>Described business processes, including development scenarios of&nbsp;four bank applications</p>
+                <p>Developed visualization of&nbsp;company reports in&nbsp;Power BI</p>
+                <p>Led a&nbsp;consolidated financial model covering indicators for&nbsp;than 30&nbsp;IT projects</p>
+                <p>Gathered and&nbsp;analysed information and&nbsp;business processes to&nbsp;implement a&nbsp;new CRM</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">Ministry of&nbsp;Investment, Industry and&nbsp;Science of&nbsp;the&nbsp;Moscow Region</p>
+                <p class="job__role">Head of&nbsp;the&nbsp;Financial and&nbsp;Analytical Sector in&nbsp;Project Department (2020–2021)</p>
+              </div>
+              <div class="job__items">
+                <p>Developed an&nbsp;interactive financial model for&nbsp;a&nbsp;social project</p>
+                <p>Supported public-private partnership projects in&nbsp;the&nbsp;fields of&nbsp;transport, healthcare, social, tourism, housing and&nbsp;communal services by&nbsp;preparing and&nbsp;verifying financial models with&nbsp;a&nbsp;total investment of&nbsp;over RUB 4&nbsp;billion</p>
+                <p>Drafted a&nbsp;regional regulatory act on&nbsp;the&nbsp;methodology for&nbsp;evaluating the&nbsp;effectiveness of&nbsp;investment projects</p>
+                <p>Negotiated with&nbsp;investors, government agencies, financing organizations in&nbsp;order to&nbsp;launch investment projects in&nbsp;the&nbsp;region</p>
+                <p>Identified financial, tax, and&nbsp;investment risks in&nbsp;agreements (concessions), prepared summary analytical materials, and&nbsp;notes on&nbsp;over than 23&nbsp;investment projects</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">PricewaterhouseCoopers (PwC)</p>
+                <p class="job__role">Consultant in&nbsp;Financial and&nbsp;Legal Services Department (2018)</p>
+              </div>
+              <div class="job__items">
+                <p>Conducted a&nbsp;comparative analysis of&nbsp;the&nbsp;financial performance of&nbsp;three financial sector companies</p>
+                <p>Assessed the&nbsp;tax consequences of&nbsp;four cases of&nbsp;a&nbsp;foreign bank within the&nbsp;framework of&nbsp;due diligence</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">The&nbsp;Bank of&nbsp;Russia</p>
+                <p class="job__role">Expert in&nbsp;the&nbsp;Main Inspectorate (2017–2018)</p>
+              </div>
+              <div class="job__items">
+                <p>Conducted on-site inspections of&nbsp;four financial sector companies: an&nbsp;insurance company, a&nbsp;broker, a&nbsp;management company, a&nbsp;registrar</p>
+                <p>Carried out monitored of&nbsp;changes in&nbsp;assets value of&nbsp;the&nbsp;largest banking group</p>
+              </div>
+            </div>
+
+            <div class="job">
+              <div class="job__head">
+                <p class="job__org">Federal Tax Service of&nbsp;Russia</p>
+                <p class="job__role">State Tax Inspector (2016–2017)</p>
+              </div>
+              <div class="job__items">
+                <p>Carried out permanent tax control of&nbsp;three companies in&nbsp;the&nbsp;energy industry</p>
+                <p>Cash flow analysed to&nbsp;identify economic schemes across more than 50&nbsp;transactions</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="work__side">
+            <h3 class="work__label work__label--light">Members &amp; Profile</h3>
+            <div class="work__profile">
+              <p>Research affiliate, World Economy and&nbsp;World Finance Department, <b>International Economic Relations Faculty</b>, Financial University under the&nbsp;Government of&nbsp;the&nbsp;Russian Federation</p>
+              <p>Member of&nbsp;the&nbsp;all-Russian <b>public organization Business Russia</b>, which brings together experts and&nbsp;leaders in&nbsp;<b>the&nbsp;development of&nbsp;international cooperation</b> and&nbsp;protection of&nbsp;the&nbsp;interests of&nbsp;businesses and&nbsp;citizens in&nbsp;the&nbsp;fields of&nbsp;healthcare, education, transport, infrastructure, industry, tourism, energy, metallurgy, agriculture, finance and&nbsp;technology</p>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <!-- First sheet -->
+      <article class="sheet sheet--first" data-drag id="intro">
+        <div class="first__top">
+          <img class="first__photo" src="img/photo.jpg" alt="" width="420" height="546" draggable="false">
+          <div class="first__name">
+            <h1 class="first__title">Niura Batrukova</h1>
+            <p class="first__role">Head of Department / Team Leader</p>
+          </div>
+        </div>
+
+        <div class="first__facts">
+          <p><b>&gt;USD 1.5&nbsp;billion</b> in investments, including government support and company involvement</p>
+          <p><b>&gt;30</b> infrastructure construction and development projects: airports, road and rail, hospitals, IT, and environmental projects</p>
+          <p class="first__fact--wide">Participation in international negotiations intergovernmental infrastructure projects</p>
+        </div>
+
+        <div class="first__bottom">
+          <p class="first__about">Financial data and&nbsp;business processes analyst, with&nbsp;experience in&nbsp;optimizing and&nbsp;implementing new effective development strategies, as&nbsp;well as&nbsp;in&nbsp;project management, control, and&nbsp;consulting</p>
+          <nav class="contacts" aria-label="Contacts">
+            <div class="contacts__group">
+              <a href="mailto:batrukovanyura@mail.ru" draggable="false">E-mail</a>
+              <a href="https://t.me/FTW_345" target="_blank" rel="noopener" draggable="false">Telegram</a>
+              <a href="https://www.instagram.com/nyura_san" target="_blank" rel="noopener" draggable="false">Instagram</a>
+            </div>
+            <!-- TODO: put the CV PDF into the repo (e.g. cv/Niura-Batrukova-CV.pdf) and set href -->
+            <a class="contacts__cv" href="#" aria-disabled="true" draggable="false">Download CV</a>
+          </nav>
+        </div>
+      </article>
+
+      <!-- Menu card -->
       <nav class="card" data-drag aria-label="Sections">
         <h2 class="card__title">Contents</h2>
         <ol class="menu">
+          <li><a href="#work" draggable="false"><span class="menu__label">Work experience</span><span class="menu__num">[7]</span></a></li>
+          <li><a href="#teaching" draggable="false"><span class="menu__label">Teaching experience</span><span class="menu__num">[2]</span></a></li>
+          <li><a href="#education" draggable="false"><span class="menu__label">Education</span><span class="menu__num">[2]</span></a></li>
           <li><a href="#conferences" draggable="false"><span class="menu__label">Conferences &amp; Forums</span><span class="menu__num">[7]</span></a></li>
           <li><a href="#publications" draggable="false"><span class="menu__label">Publications</span><span class="menu__num">[6]</span></a></li>
-          <li><a href="#teaching" draggable="false"><span class="menu__label">Teaching experience</span><span class="menu__num">[2]</span></a></li>
-          <li><a href="#awards" draggable="false"><span class="menu__label">Awards &amp; Medals</span><span class="menu__num">[4]</span></a></li>
+          <li><a href="#awards" draggable="false"><span class="menu__label">Awards &amp; Medals</span><span class="menu__num">[5]</span></a></li>
         </ol>
       </nav>
-
-      <aside class="note" data-drag>
-        <blockquote class="note__quote">
-          <p>Quote placeholder: one or two lines that sum her up.</p>
-        </blockquote>
-      </aside>
 
     </div>
   </main>
 
   <button class="reset" type="button" hidden>Put back</button>
 
-  <script src="js/drag.js?v=3"></script>
+  <script src="js/drag.js?v=4"></script>
 </body>
 </html>

@@ -1,26 +1,30 @@
 /* ==========================================================================
-   Niura Batrukova, CV site. Intro screen.
+   Niura Batrukova, CV site.
 
-   How scaling works
-   -----------------
-   .desk is the A4 sheet area and a size container: 1cqw = 1% of the sheet
-   width. Everything is sized in cqw, so the whole composition scales as one
-   piece on any screen and keeps the A4 ratio. Same proportions as in Figma.
+   Scale
+   -----
+   .desk is one A4 sheet (Figma "First", 525 × 737) and a size container:
+   1cqw = 1% of the sheet width. Everything is sized in cqw, so the whole
+   composition scales as one piece and keeps the proportions of the Figma frame.
 
-   Conversion from the Figma frame (sheet 439.537 px wide): 1px = 0.22752cqw.
+   From Figma to code:  value in cqw = Figma px × 0.190476  (= px / 5.25)
+   Positions come from the Figma frame "дефолтное состояние" (1440 × 900):
+   left = (x − 458) / 5.25,  top = (y − 82) / 5.25   (458, 82 = "First" sheet).
+   On a 1440 × 900 screen 1cqw = 5.25px, so the site looks exactly like the frame.
+
+   Rotation
+   --------
+   Figma rotates around the top-left corner and counter-clockwise, CSS clockwise:
+   Figma 2° = CSS --rot: -2deg with transform-origin at the top-left corner.
 
    Dragging
    --------
-   Elements with [data-drag] are moved by js/drag.js. It writes the offset
-   into --dx / --dy (in cqw), so a moved sheet stays in place when the window
-   is resized.
+   Elements with [data-drag] are moved by js/drag.js through --dx / --dy (cqw).
+
    Fonts
    -----
-   Medeo Sans is one variable font file with two axes: weight (100–900) and
-   optical size "opsz" (14 = Medeo Sans, 32 = Medeo Sans Display).
-   Both family names point to the same files, so the site does not depend on
-   fonts installed on the visitor's computer. The Display look is switched on
-   with font-variation-settings (see body and .medeo-text below).
+   Medeo Sans: one variable file, axes weight (100–900) and optical size "opsz"
+   (14 = Medeo Sans, 32 = Medeo Sans Display). Both names point to the same file.
    ITC Bodoni Seventytwo comes from Adobe Fonts ("itc-bodoni-seventytwo-pro",
    linked in index.html). If it does not load, Macs fall back to their own Bodoni 72.
    ========================================================================== */
@@ -46,46 +50,29 @@
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: "Medeo Sans Display";
-  src: url("../fonts/MedeoSansVariable-Italic.woff2") format("woff2");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
 
 :root {
   --bg: #060709;
-  --paper: #e5e6e8;
-  --card: #8baece;
-  --ink: #343434;
-  --ink-soft: rgba(0, 0, 0, 0.7);
-  --ink-faint: rgba(0, 0, 0, 0.5);
-  --card-ink: #1d2b38;
+  --blue: #8baece;           /* menu card, sheet titles */
   --menu-ink: #333a41;
-
   --font-display: "itc-bodoni-seventytwo-pro", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
-  --font-italic: "itc-bodoni-seventytwo-pro", "Bodoni 72", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
-  --font-title: var(--font-display);   /* menu title "Contents" is Bodoni too */
-  --font-text: "Medeo Sans Display", "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-text: "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-
 html, body { margin: 0; height: 100%; }
 
 body {
   background: var(--bg);
-  color: var(--ink);
   font-family: var(--font-text);
-  /* texts on the current sheets are "Medeo Sans Display" in Figma */
-  font-variation-settings: "opsz" 32;
+  font-variation-settings: "opsz" 14;   /* Medeo Sans (text cut) */
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }
 
-/* for texts set in plain "Medeo Sans" in Figma (the CV sheets) */
-.medeo-text { font-variation-settings: "opsz" 14; }
+p, h1, h2, h3, ul, ol { margin: 0; padding: 0; font-weight: 400; }
+b { font-weight: 600; }
+.nowrap { white-space: nowrap; }
 
 .stage {
   height: 100vh;
@@ -95,30 +82,29 @@ body {
   overflow: hidden;
 }
 
-/* ---------- desk: the A4 area, size container for everything ---------- */
+/* ---------- desk: one A4 sheet, everything is sized from it ---------- */
 
 .desk {
   position: relative;
-  /* sheet takes 86.4% of screen height, or 86% of screen width if narrower
-     (the menu card sticks out 3.5% past the sheet's right edge, as in Figma) */
-  width: min(86vw, calc(100vh * 0.864 * 439.537 / 622));
-  width: min(86vw, calc(100dvh * 0.864 * 439.537 / 622));
-  margin-right: 3vw;
-  aspect-ratio: 439.537 / 622;
+  /* sheet height = 737 / 900 of the screen height, or 86% of the width on narrow screens */
+  width: min(86vw, calc(100vh * 737 / 900 * 525 / 737));
+  width: min(86vw, calc(100dvh * 737 / 900 * 525 / 737));
+  aspect-ratio: 525 / 737;
   container-type: inline-size;
-  --fit: 1;                         /* set by js: scales a wide composition down to fit the screen */
+  --fit: 1;
   scale: var(--fit);
-  transition: scale 0.8s cubic-bezier(0.22, 0.9, 0.25, 1), translate 0.8s cubic-bezier(0.22, 0.9, 0.25, 1);
 }
 
-/* ---------- draggable behaviour ---------- */
+/* ---------- dragging ---------- */
 
 [data-drag] {
-  --dx: 0;          /* offset from dragging, set by js/drag.js */
+  --dx: 0;
   --dy: 0;
-  --sx: 0;          /* offset of the current view (menu composition), set below */
+  --sx: 0;            /* offsets of a view (storyboard frame), next step */
   --sy: 0;
   --rot: 0deg;
+  position: absolute;
+  transform-origin: 0 0;   /* rotate like Figma: around the top-left corner */
   transform: translate(calc((var(--dx) + var(--sx)) * 1cqw), calc((var(--dy) + var(--sy)) * 1cqw)) rotate(var(--rot));
   cursor: grab;
   touch-action: none;
@@ -130,7 +116,7 @@ body {
 
 [data-drag].is-dragging {
   cursor: grabbing;
-  scale: 1.015;
+  scale: 1.01;
   box-shadow: 0 3cqw 6cqw rgba(0, 0, 0, 0.45);
 }
 
@@ -138,285 +124,283 @@ body {
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), scale 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* switching views: sheets slide into the new composition */
-.is-moving [data-drag] {
-  transition: transform 0.8s cubic-bezier(0.22, 0.9, 0.25, 1), scale 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* ---------- sheets ---------- */
+/* ==========================================================================
+   Sheets, as in the Figma frame "дефолтное состояние" (bottom to top)
+   ========================================================================== */
 
 .sheet {
-  position: absolute;
-  inset: 0;
-  background: var(--paper);
   overflow: clip;
-}
-
-.sheet--back { --rot: 1deg; z-index: 1; }
-
-.sheet--intro {
-  z-index: 3;
-  box-shadow: 0 0.91cqw 1.05cqw rgba(60, 60, 60, 0.2);
-}
-
-.photo {
-  position: absolute;
-  left: 2.73cqw;
-  top: 3.185cqw;
-  width: 31.85cqw;
-  height: 41.41cqw;
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
-}
-
-/* ---------- translucent note with the quote ---------- */
-
-.note {
-  position: absolute;
-  z-index: 5;
-  left: 4.55cqw;
-  top: 5.69cqw;
-  width: 45.5cqw;
-  height: 45.5cqw;
-  padding: 4.55cqw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.4);
-  -webkit-backdrop-filter: blur(2.22cqw);
-  backdrop-filter: blur(2.22cqw);
-  overflow: clip;
+  align-items: flex-start;
+  justify-content: space-between;   /* title on top, content at the bottom */
 }
 
-.note::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.25;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .87 0 0 0 0 .87 0 0 0 0 .87 1 0 0 0 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-
-.note__quote {
-  position: relative;
-  margin: 0;
-  font-family: var(--font-italic);
-  font-style: italic;
-  font-size: 2.73cqw;
-  color: #2b2a28;
-}
-
-.note__quote p { margin: 0; }
-
-/* ---------- name and description ---------- */
-
-.bio {
-  position: absolute;
-  left: 4.55cqw;
-  bottom: 7.74cqw;
-  width: 80.1cqw;
-  display: flex;
-  flex-direction: column;
-  gap: 1.1cqw;
-}
-
-.bio__role,
-.bio__name,
-.bio__text { margin: 0; font-weight: 400; }
-
-.bio__role { font-size: 2.275cqw; color: var(--ink-faint); }
-
-.bio__name {
+.sheet__title {
   font-family: var(--font-display);
-  font-size: 7.638cqw;
-  color: var(--ink);
+  font-size: 6.857cqw;              /* 36px */
+  line-height: 8cqw;                /* 42px */
+  color: var(--blue);
   white-space: nowrap;
 }
-
-.bio__text { font-size: 2.275cqw; color: var(--ink-soft); }
-
-/* ---------- menu card ---------- */
-
-.card {
+.sheet__title--pinned {
   position: absolute;
-  z-index: 4;
-  left: 59.38cqw;
-  top: 4.1cqw;
-  width: 44.14cqw;
-  height: 91cqw;
-  padding: 3.64cqw;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: var(--card);
-  box-shadow: 0 0.91cqw 0.91cqw rgba(183, 183, 183, 0.25);
+  left: 3.048cqw;                   /* 16px */
+  top: 3.429cqw;                    /* 18px */
 }
 
-.card__title {
-  margin: 0;
-  font-family: var(--font-title);
-  font-weight: 400;
-  font-size: 4.584cqw;             /* 33.2px in the 320px menu */
-  line-height: 5.239cqw;
-  color: #333a41;
+.ink { color: #252525; }
+
+/* common list of entries: title in ink, details grey, 10px */
+.entries {
+  width: 100%;
+  font-size: 1.905cqw;              /* 10px */
+  line-height: 2.381cqw;            /* 12.5px */
+  color: rgba(69, 69, 69, 0.6);
 }
+.entries p + p { margin-top: 2.286cqw; }   /* 12px */
 
-.menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.873cqw;
-}
+/* ---------- Education (412 × 541), not in the default frame: under everything ---------- */
 
-.menu a {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 0.91cqw;
-  color: var(--menu-ink);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.menu__label { font-family: var(--font-display); font-size: 3.056cqw; }
-
-.menu__num {
-  font-family: "Medeo Sans", var(--font-text);
-  font-variation-settings: "opsz" 14;
-  font-size: 1.31cqw;               /* 9.5px in the 320px menu */
-  color: var(--card-ink);
-}
-
-.menu a:hover .menu__label {
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
-  text-decoration-thickness: 1px;
-}
-
-.menu a:focus-visible { outline: 2px solid var(--card-ink); outline-offset: 3px; }
-
-/* ---------- Section sheets (Figma section "handoff")
-   Same Figma scale as the intro sheet: 1px in Figma = 0.22752cqw.
-   Conferences & Forums 420 × 595, Publications 412 × 622.
-   Stacked under the intro sheet; they peek out from its left edge. ---------- */
-
-.page {
-  position: absolute;
-  z-index: 2;
-  padding: 3.64cqw;                 /* 16px */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;   /* title on top, content at the bottom */
+.sheet--education {
+  z-index: 0;
+  left: 10.667cqw;  top: 18.476cqw;          /* same place as Publications */
+  width: 78.476cqw; height: 103.048cqw;
+  padding: 3.048cqw;                         /* 16px */
   background: #f0f1f4;
-  box-shadow: 0.2275cqw 0.91cqw 2.093cqw 0.91cqw rgba(52, 52, 52, 0.03);
-  overflow: clip;
 }
-
-.page--conferences {
-  z-index: 2;
-  width: 95.558cqw;                 /* 420px */
-  height: 135.374cqw;               /* 595px */
-  --rot: -3deg;
-  left: -9cqw;
-  top: 4cqw;
+.edu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4.571cqw;                             /* 24px */
+  font-size: 1.905cqw;
+  line-height: 2.381cqw;
+  color: rgba(69, 69, 69, 0.6);
 }
+.edu__degrees p + p { margin-top: 2.286cqw; }
+.edu__courses { display: flex; flex-direction: column; gap: 1.524cqw; }   /* 8px */
+.edu__label { text-transform: uppercase; }
+.edu__list p + p { margin-top: 1.524cqw; }
 
-.page--publications {
+/* ---------- Awards (390 × 390, yellow note) ---------- */
+
+.sheet--awards {
   z-index: 1;
-  width: 93.738cqw;                 /* 412px */
-  height: 141.517cqw;               /* 622px */
-  --rot: 2deg;
-  left: -6cqw;
-  top: -1cqw;
+  left: 12.762cqw;  top: 32.952cqw;          /* 525, 255 */
+  width: 74.286cqw; height: 74.286cqw;
+  padding: 3.81cqw;                          /* 20px */
+  background: #ffffdd;
 }
-
-.page__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 4.55cqw;               /* 20px */
+.sheet--awards .sheet__title {
+  font-size: 6.067cqw;                       /* 31.85px */
+  line-height: 7.079cqw;
+}
+.awards {
+  width: 56.571cqw;                          /* 297px */
+  font-size: 2.286cqw;                       /* 12px */
   line-height: normal;
-  color: #454545;
+  color: #2b2b2b;
+}
+.awards p + p { margin-top: 1.524cqw; }      /* 8px */
+
+/* ---------- Publications (412 × 541) ---------- */
+
+.sheet--publications {
+  z-index: 2;
+  left: 10.667cqw;  top: 18.476cqw;          /* 514, 179 */
+  width: 78.476cqw; height: 103.048cqw;
+  padding: 3.048cqw;
+  justify-content: flex-end;
+  background: #f0f1f4;
 }
 
-.page--publications .page__title { color: #343434; }
+/* ---------- Conferences & Forums (525 × 737) ---------- */
 
-/* conferences list */
+.sheet--conferences {
+  z-index: 3;
+  left: 0;          top: 0;                  /* 458, 82 */
+  width: 100cqw;    height: 140.381cqw;
+  padding: 3.81cqw;
+  background: #f2f4fa;
+}
 .events {
   list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 58.018cqw;                 /* 255px */
+  width: 53.524cqw;                          /* 281px */
   display: flex;
   flex-direction: column;
-  gap: 3.64cqw;                     /* 16px */
-  font-family: "Medeo Sans", var(--font-text);
-  font-variation-settings: "opsz" 14;
-  font-size: 2.275cqw;              /* 10px */
+  gap: 2.286cqw;                             /* 12px */
+  font-size: 1.905cqw;                       /* 10px */
 }
-
-.event { display: flex; flex-direction: column; gap: 0.91cqw; }   /* 4px */
-.event p { margin: 0; }
-.event__name { line-height: 2.844cqw; color: #454545; }          /* lh 12.5px */
+.event { display: flex; flex-direction: column; gap: 0.762cqw; }   /* 4px */
+.event__name { line-height: 2.381cqw; color: #454545; }
 .event--key .event__name {
   font-family: "Medeo Sans Display", var(--font-text);
   font-variation-settings: "opsz" 32;
   font-weight: 700;
 }
-.event__name--narrow { max-width: 33.67cqw; }                     /* 148px */
-.event__name--wide { max-width: 50.737cqw; }                      /* 223px */
 .event__details { line-height: normal; color: rgba(29, 43, 56, 0.6); }
+.event__details--narrow { max-width: 43.429cqw; }                  /* 228px */
 
-/* publications list */
-.pubs {
-  font-family: "Medeo Sans", var(--font-text);
-  font-variation-settings: "opsz" 14;
-  font-size: 2.275cqw;              /* 10px */
-  line-height: 2.844cqw;            /* 12.5px */
-  color: #252525;
+/* ---------- Teaching experience (412 × 541, white) ---------- */
+
+.sheet--teaching {
+  z-index: 4;
+  left: 0;          top: 36.19cqw;           /* 458, 272 */
+  width: 78.476cqw; height: 103.048cqw;
+  padding: 3.048cqw;
+  justify-content: flex-end;
+  background: #ffffff;
 }
-.pubs p { margin: 0 0 2.73cqw; }  /* 12px */
-.pubs p:last-child { margin-bottom: 0; }
-.pub__source { color: rgba(69, 69, 69, 0.6); }
 
-/* ---------- event photos (Figma "композиция", 181 × 227 each) ---------- */
+/* ---------- Work experience (526.45 × 745, turned 2°) ---------- */
 
-.snap {
-  position: absolute;
-  z-index: 2;
-  width: 41.25cqw;
-  height: 51.55cqw;
-  object-fit: cover;
+.sheet--work {
+  z-index: 5;
+  left: -2.667cqw;  top: 0.952cqw;           /* 444, 87 */
+  width: 100.276cqw; height: 141.905cqw;
+  --rot: -2deg;                              /* Figma 2° */
+  padding: 2.697cqw;                         /* 14.16px */
+  justify-content: flex-start;
+  gap: 4.045cqw;                             /* 21.2px */
+  background: #f2f4fa;
+}
+.work__title { font-size: 6.067cqw; line-height: 7.079cqw; }      /* 31.85 / 37.16 */
+.work {
+  width: 100%;
+  display: flex;
+  gap: 4.045cqw;
+  align-items: flex-start;
+  color: #2b2b2b;
+}
+.work__main { width: 57.638cqw; flex: none; display: flex; flex-direction: column; gap: 3.371cqw; }  /* 302.6px, gap 17.7 */
+.work__side { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2.022cqw; }
+.work__label {
+  padding-bottom: 0.674cqw;
+  border-bottom: 0.084cqw solid rgba(0, 0, 0, 0.6);
+  font-size: 1.18cqw;                        /* 6.19px */
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  color: #343434;
+  width: 100%;
+}
+.work__label--light { font-weight: 400; color: rgba(52, 52, 52, 0.8); border-bottom-color: rgba(0, 0, 0, 0.4); }
+.job { display: flex; flex-direction: column; gap: 1.011cqw; }    /* 5.3px */
+.job__head { display: flex; flex-direction: column; gap: 0.337cqw; line-height: normal; }
+.job__org { font-size: 1.348cqw; font-weight: 500; letter-spacing: 0.027cqw; color: #2b2b2b; }   /* 7.08px */
+.job__role { font-size: 1.011cqw; color: #737373; }                /* 5.3px */
+.job__items { font-size: 1.18cqw; line-height: normal; }          /* 6.19px */
+.job__items p + p { margin-top: 0.506cqw; }
+.work__profile { font-size: 1.18cqw; line-height: normal; }
+.work__profile p + p { margin-top: 1.348cqw; }
+
+/* ---------- First sheet (525 × 737) ---------- */
+
+.sheet--first {
+  z-index: 6;
+  left: 0;          top: 0;
+  width: 100cqw;    height: 140.381cqw;
+  padding: 3.81cqw;                          /* 20px */
+  background: #f2f4fa;
+  box-shadow: 0 0.762cqw 0.762cqw rgba(0, 0, 0, 0.05), 0 -0.19cqw 1.295cqw rgba(0, 0, 0, 0.05);
+}
+.first__top { width: 50.624cqw; display: flex; flex-direction: column; gap: 2.857cqw; }   /* 265.8px, gap 15 */
+.first__photo {
   display: block;
-  left: 46.22cqw;                   /* on the top-right corner of the conferences sheet */
-  top: 2.34cqw;
+  width: 34.286cqw;  height: 42.667cqw;      /* 180 × 224 */
+  object-fit: cover;
+  pointer-events: none;
 }
-.snap--2 { --rot: 2.42deg; left: 47.33cqw; top: 1.5cqw; }
+.first__name { line-height: normal; }
+.first__title {
+  font-family: var(--font-display);
+  font-size: 8cqw;                           /* 42px */
+  color: #4d4d4d;
+  white-space: nowrap;
+}
+.first__role { font-size: 2.286cqw; color: rgba(0, 0, 0, 0.5); }  /* 12px */
 
-/* ---------- views: what the desk looks like after a menu click
-   Offsets are from each element's home position, in cqw (Figma px × 0.22752),
-   taken from the Figma frame "композиция". ---------- */
+.first__facts {
+  position: absolute;
+  left: 3.81cqw;  top: 72.381cqw;            /* 20, 380 */
+  width: 47.238cqw;                          /* 248px */
+  display: flex;
+  flex-direction: column;
+  gap: 3.81cqw;                              /* 20px */
+  font-size: 2.286cqw;
+  line-height: normal;
+  color: #454545;
+}
+.first__facts b { font-weight: 600; }
+.first__fact--wide { width: 51.238cqw; }     /* 269px */
 
-.desk:not([data-view="home"]) .sheet--intro,
-.desk:not([data-view="home"]) .sheet--back { --sx: -77.36; --sy: 71.21; }
-.desk:not([data-view="home"]) .sheet--intro { cursor: pointer; z-index: 1; }
-.desk:not([data-view="home"]) .sheet--back { z-index: 0; }
-.desk:not([data-view="home"]) .note { --sx: -77.58; --sy: 2.5; --rot: -0.2deg; }
-.desk:not([data-view="home"]) .card { --sx: 52.1; --sy: -1.14; }
+.first__bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4.571cqw;                             /* 24px */
+  font-size: 2.286cqw;
+}
+.first__about { width: 81.333cqw; line-height: normal; color: #454545; }   /* 427px */
 
-/* Conferences & Forums in the middle, photos on its corner, publications under it */
-[data-view="conferences"] .page--conferences { --sx: 11.275; --sy: 0.55; --rot: 0deg; z-index: 3; }
-[data-view="conferences"] .snap { --sx: 11.275; --sy: 0.55; z-index: 3; }
-[data-view="conferences"] .page--publications { --sx: 10.3; --sy: 7; --rot: 1.5deg; }
+.contacts {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  line-height: 2.381cqw;
+  white-space: nowrap;
+}
+.contacts__group { display: flex; gap: 3.048cqw; }                 /* 16px */
+.contacts a { color: #5a93ca; text-decoration: none; cursor: pointer; }
+.contacts a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.contacts__cv[aria-disabled="true"] { cursor: default; }
 
-/* Publications in the middle, conferences and its photos tucked under it */
-[data-view="publications"] .page--publications { --sx: 8.275; --sy: 1; --rot: 0deg; z-index: 3; }
-[data-view="publications"] .page--conferences { --sx: 15; --sy: 5; --rot: -1.5deg; }
-[data-view="publications"] .snap { --sx: 8; --sy: 6; --rot: -1.5deg; }   /* hidden under the sheet */
+/* ---------- Menu card (266 × 540) ---------- */
 
-/* ---------- "put back" button, shows up after something was moved ---------- */
+.card {
+  z-index: 7;
+  left: 56.571cqw;  top: 5.333cqw;           /* 755, 110 */
+  width: 50.667cqw; height: 102.857cqw;
+  padding: 4.009cqw;                         /* 21px */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--blue);
+  box-shadow: 0 1.002cqw 1.002cqw rgba(183, 183, 183, 0.25);
+}
+.card__title {
+  font-family: var(--font-display);
+  font-size: 5.262cqw;                       /* 27.6px */
+  line-height: 6.013cqw;
+  color: var(--menu-ink);
+}
+.menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.524cqw;                             /* 8px */
+}
+.menu a {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 1.002cqw;
+  color: var(--menu-ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.menu__label {
+  font-family: var(--font-display);
+  font-size: 3.429cqw;                       /* 18px */
+  letter-spacing: 0.069cqw;
+  line-height: normal;
+}
+.menu__num { font-size: 1.503cqw; color: #1d2b38; line-height: normal; }   /* 7.9px */
+.menu a:hover .menu__label { text-decoration: underline; text-underline-offset: 0.25em; text-decoration-thickness: 1px; }
+.menu a:focus-visible { outline: 2px solid var(--menu-ink); outline-offset: 3px; }
+
+/* ---------- "Put back" button, shows up after something was moved ---------- */
 
 .reset {
   position: fixed;
@@ -431,7 +415,6 @@ body {
   border: 1px solid rgba(196, 218, 239, 0.35);
   cursor: pointer;
 }
-
 .reset:hover { border-color: rgba(196, 218, 239, 0.8); }
 
 @media (prefers-reduced-motion: reduce) {
