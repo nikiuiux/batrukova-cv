@@ -50,3 +50,8 @@ https://nikiuiux.github.io/batrukova-cv/
 
 - Medeo Sans лежит в папке `fonts`.
 - ITC Bodoni Seventytwo подключается из Adobe Fonts строкой `use.typekit.net/mov4rsg.css` в `index.html` (веб-проект «Batrukova CV» в аккаунте Adobe). Файлы этого шрифта на сайт класть нельзя, так требует лицензия Adobe. Если подписка закончится, шрифт пропадёт, и сайт покажет запасной Bodoni.
+
+## Аналитика
+
+GoatCounter, статистика на https://batrukova.goatcounter.com (вход своим e-mail и паролем). Счётчик подключён в конце `index.html`.
+Кроме просмотров считаются события: `open-work`, `open-teaching` и другие (какие разделы открывали в меню), `download-cv`, `contact-email`, `contact-telegram`, `contact-instagram`. Они видны в списке страниц как отдельные строки.
