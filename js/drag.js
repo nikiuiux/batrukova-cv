@@ -135,6 +135,10 @@
   // event photos lie in the top-right corner of Conferences and travel with it,
   // turning around the sheet corner together with the sheet
   let confNow = null;                        // where Conferences is now, null = at home
+  // spread out after a click: [left, top, Figma rotation] from the sheet corner, Figma px.
+  // They fill the free space right of and under the list.
+  const SPREAD = [[335, 95, 2], [345, 300, -2.5], [178, 555, -1.5], [20, 528, 1.5], [352, 522, 2]];
+  let spread = false;
   function placeSnaps(all) {
     const conf = document.getElementById('conferences');
     snaps.forEach((el, i) => {
@@ -142,21 +146,36 @@
       if (!all && byHand) return;            // a photo moved by hand stays where it was put
       if (all) clearHand(el);
       el.style.setProperty('--delay', conf.style.getPropertyValue('--delay') || '0s');
-      if (!confNow) { if (all) unplace(el); return; }
-      const [cx, cy, cr] = confNow;
-      const ox = el.offsetLeft * 5.25 / (desk.offsetWidth / 100);   // photo corner from the sheet corner, Figma px
-      const oy = el.offsetTop * 5.25 / (desk.offsetWidth / 100);
+      const sp = spread && SPREAD[i];
+      if (!confNow && !sp) { if (all) unplace(el); return; }
+      const [cx, cy, cr] = confNow || HOME.conferences;
+      const ux = 5.25 / (desk.offsetWidth / 100);
+      const hx = el.offsetLeft * ux, hy = el.offsetTop * ux;        // pile place from the sheet corner, Figma px
+      const ox = sp ? sp[0] : hx, oy = sp ? sp[1] : hy;
       const a = cr * Math.PI / 180;                                   // Figma turns counter-clockwise
       const x = cx + ox * Math.cos(a) + oy * Math.sin(a);
       const y = cy - ox * Math.sin(a) + oy * Math.cos(a);
-      place(el, [HOME.conferences[0] + ox, HOME.conferences[1] + oy, 0], [x, y, cr]);
+      place(el, [HOME.conferences[0] + hx, HOME.conferences[1] + hy, 0], [x, y, cr]);
+      if (sp) el.style.setProperty('--rot', -(cr + sp[2]) + 'deg');
       if (!all) return;
       // on the open sheet the photos lie on top; in the left stack they hide under the sheet,
       // so they do not peek out from behind the other sheets
       const cz = parseInt(conf.style.zIndex, 10);
-      if (cz) el.style.zIndex = view === 'conferences' ? cz + 1 + i : cz - 5 + i;
+      if (cz) el.style.zIndex = view === 'conferences' || spread || isPhone() ? cz + 1 + i : cz - 5 + i;
     });
   }
+
+  // a click on a photo spreads the pile out, so all of them are seen at once; another click gathers it
+  snaps.forEach(el => el.addEventListener('click', e => {
+    if (e.defaultPrevented) return;          // the click that ends a drag
+    spread = !spread;
+    snaps.forEach(n => n.style.setProperty('--delay', '0s'));
+    placeSnaps(true);
+    if (spread && view !== 'conferences') {      // keep them above the sheet while spread
+      const cz = parseInt(getComputedStyle(document.getElementById('conferences')).zIndex, 10) || 3;
+      snaps.forEach((n, i) => { n.style.zIndex = cz + 1 + i; });
+    }
+  }));
 
   function straighten(el) {
     el.style.setProperty('--rot', '0deg');
@@ -180,6 +199,7 @@
     desk.dataset.view = id;
     const at = SEQ.indexOf(id);
     const chosen = id === 'home' ? 'intro' : id;
+    spread = false;                            // photos gather back into their pile
     clearTimeout(phaseTimer);
 
     // where every sheet goes
@@ -358,6 +378,7 @@
 
   // bring a sheet on top: it slides in from the side (from = -1 left, 1 right)
   function phoneOpen(id, from = 1) {
+    spread = false;
     if (cardHome) { cardHome = false; phoneCard(); }   // from now on the menu is a strip at the edge
     phoneMenu(false);
     if (deck[0] === id || busy) return;
@@ -383,6 +404,7 @@
   // tuck the top sheet under the pile
   function phoneNext() {
     if (busy) return;
+    spread = false;
     busy = true;
     if (cardHome) { cardHome = false; phoneCard(); }
     const k = deck[0];
@@ -456,7 +478,7 @@
       el.classList.remove('is-dragging', 'is-open');
     });
     desk.classList.remove('is-moving', 'is-returning');
-    view = 'home'; cardPinned = false; confNow = null; lastPlaced = { ...HOME }; clearTimeout(phaseTimer);
+    view = 'home'; cardPinned = false; confNow = null; spread = false; lastPlaced = { ...HOME }; clearTimeout(phaseTimer);
     desk.dataset.view = 'home';
     desk.style.setProperty('--fit', 1);
     resetBtn.hidden = true;

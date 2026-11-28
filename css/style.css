@@ -143,7 +143,7 @@ b { font-weight: 600; }
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;      /* title on top, content right under it */
-  gap: 4.571cqw;                    /* 24px between the title and the text */
+  gap: 9.143cqw;                    /* 48px between the title and the text */
 }
 
 .sheet__title {
@@ -221,7 +221,7 @@ b { font-weight: 600; }
   left: 10.667cqw;  top: 18.476cqw;          /* 514, 179 */
   width: 78.476cqw; height: 103.048cqw;
   padding: 3.048cqw;
-  padding-top: 16cqw;               /* pinned title 18 + 42, then 24px */
+  padding-top: 20.571cqw;           /* pinned title 18 + 42, then 48px */
   background: #f0f1f4;
 }
 
@@ -252,16 +252,24 @@ b { font-weight: 600; }
 .event__details { line-height: normal; color: rgba(29, 43, 56, 0.6); }
 .event__details--narrow { max-width: 43.429cqw; }                  /* 228px */
 
-/* ---------- Event photos (181 × 227 each), top-right corner of Conferences ---------- */
+/* ---------- Event photos: a pile in the free bottom-right corner of Conferences.
+   A click spreads them over the sheet (positions in js/drag.js, SPREAD), another click
+   gathers them back. Positions are from the sheet corner, Figma px / 5.25. ---------- */
 
 .snap {
   z-index: 3;                                /* same layer as Conferences, above it in the HTML */
-  left: 61.714cqw;  top: 15.238cqw;          /* 324, 80: under the sheet title */
-  width: 34.476cqw; height: 43.238cqw;
+  width: 30.476cqw; height: 38.095cqw;       /* portrait 160 × 200 */
   object-fit: cover;
   display: block;
+  cursor: pointer;
+  box-shadow: 0 0.381cqw 1.143cqw rgba(0, 0, 0, 0.18);
 }
-.snap--2 { --rot: 2.42deg; left: 62.857cqw; top: 14.286cqw; }
+.snap--3 { width: 38.095cqw; height: 28.571cqw; }    /* landscape 200 × 150 */
+.snap--1 { left: 62.857cqw; top: 97.524cqw;  --rot: -3deg; }   /* 330, 512 */
+.snap--2 { left: 65.143cqw; top: 98.476cqw;  --rot: 2deg; }    /* 342, 517 */
+.snap--3 { left: 57.143cqw; top: 106.667cqw; --rot: -2deg; }   /* 300, 560 */
+.snap--4 { left: 64cqw;     top: 98.095cqw;  --rot: 4deg; }    /* 336, 515 */
+.snap--5 { left: 64.762cqw; top: 98.476cqw;  --rot: -1deg; }   /* 340, 517, on top */
 
 /* ---------- Teaching experience (412 × 541, white) ---------- */
 
@@ -270,7 +278,7 @@ b { font-weight: 600; }
   left: 0;          top: 36.19cqw;           /* 458, 272 */
   width: 78.476cqw; height: 103.048cqw;
   padding: 3.048cqw;
-  padding-top: 16cqw;               /* pinned title 18 + 42, then 24px */
+  padding-top: 20.571cqw;           /* pinned title 18 + 42, then 48px */
   background: #ffffff;
 }
 
