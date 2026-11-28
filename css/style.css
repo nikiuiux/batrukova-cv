@@ -93,6 +93,7 @@ b { font-weight: 600; }
   container-type: inline-size;
   --fit: 1;
   scale: var(--fit);
+  transition: scale 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* ---------- dragging ---------- */
@@ -120,7 +121,8 @@ b { font-weight: 600; }
   box-shadow: 0 3cqw 6cqw rgba(0, 0, 0, 0.45);
 }
 
-.is-returning [data-drag] {
+.is-returning [data-drag],
+.is-moving [data-drag] {
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), scale 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -430,5 +432,5 @@ b { font-weight: 600; }
 .reset:hover { border-color: rgba(196, 218, 239, 0.8); }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-drag], .is-returning [data-drag] { transition: none; }
+  [data-drag], .is-returning [data-drag], .is-moving [data-drag], .desk { transition: none; }
 }

@@ -16,7 +16,7 @@
     el.addEventListener('pointerdown', e => {
       if (e.button !== 0) return;
       suppressClick = false;
-      desk.classList.remove('is-returning');
+      desk.classList.remove('is-returning', 'is-moving');
       start = {
         id: e.pointerId,
         x: e.clientX,
@@ -70,38 +70,156 @@
     }, true);
   });
 
-  function clearManual() {
-    items.forEach(el => {
-      el.style.removeProperty('--dx');
-      el.style.removeProperty('--dy');
-      el.style.removeProperty('z-index');
-    });
-    top = Math.max(...items.map(el => parseInt(getComputedStyle(el).zIndex, 10) || 0));
+  // ==========================================================================
+  // Storyboard (Figma section "Раскадровка").
+  // All coordinates are Figma px in the 1440 × 900 frame, rotation in Figma degrees.
+  // A menu click puts the chosen sheet in the centre, First and the sheets already
+  // seen go aside, the menu card moves to the right.
+  // ==========================================================================
+
+  const PX = 1 / 5.25;                       // Figma px → cqw
+
+  // where everything lies in "дефолтное состояние" (must match css/style.css)
+  const HOME = {
+    intro: [458, 82, 0], work: [444, 87, 2], teaching: [458, 272, 0], conferences: [458, 82, 0],
+    publications: [514, 179, 0], awards: [525, 255, 0], education: [514, 179, 0], card: [755, 110, 0],
+  };
+  // the opened sheet
+  const CENTER = {
+    work: [457, 78, 0], teaching: [443, 285, 0], conferences: [458, 82, 0],
+    publications: [514, 179, 0], awards: [525, 287, 0],
+    education: [514, 179, 0],                // not in the storyboard yet
+  };
+  // sheets already seen (and First) are put aside
+  const AWAY = {
+    intro: [-139, 82, 0], work: [-168, 111, 0], teaching: [-74, 205, 0], conferences: [-150, 90, 0],
+    publications: [992, 21, 0],
+    awards: [1000, 470, 0], education: [-120, 250, 0],   // not in the storyboard yet
+  };
+  // sheets not seen yet shift a little in the pile once First is gone
+  const PILE = { conferences: [464.47, 77.47, -1], teaching: [452, 266, 0], education: AWAY.education };
+  const CARD = [1054, 74, 0];
+  // stacking aside: left pile bottom to top, then the right side
+  // (Education, not in the storyboard yet, hides at the bottom of the left pile until opened)
+  const AWAY_Z = { education: 9, conferences: 10, intro: 15, teaching: 16, work: 17, publications: 18, awards: 19 };
+  const ACTIVE_Z = 20, CARD_Z = 30;
+
+  const card = desk.querySelector('.card');
+  const sheets = Object.keys(HOME).filter(k => k !== 'card').map(k => document.getElementById(k)).filter(Boolean);
+  const snaps = [...desk.querySelectorAll('[data-with]')];
+  const baseRot = new Map(items.map(el => [el, parseFloat(getComputedStyle(el).getPropertyValue('--rot')) || 0]));
+  let view = 'home';
+  let seen = [];
+  let cardPinned = false;                    // the visitor moved the menu card by hand: leave it there
+
+  function place(el, home, to) {
+    el.style.setProperty('--sx', ((to[0] - home[0]) * PX).toFixed(3));
+    el.style.setProperty('--sy', ((to[1] - home[1]) * PX).toFixed(3));
+    el.style.setProperty('--rot', (baseRot.get(el) - (to[2] - home[2])) + 'deg');
+  }
+  function unplace(el) {
+    ['--sx', '--sy', '--rot', 'z-index'].forEach(p => el.style.removeProperty(p));
+  }
+  function clearHand(el) {
+    el.style.removeProperty('--dx');
+    el.style.removeProperty('--dy');
+    el.style.removeProperty('z-index');
   }
 
-  // ---------- menu ----------
-  // For now a menu item brings its sheet to the top of the pile; the menu card stays above it.
-  // The storyboard transitions (Figma section "Раскадровка") come next.
+  function fit() {
+    // the whole 1440-wide composition has to fit on narrow screens
+    const w = desk.offsetWidth * 1440 / 525;
+    desk.style.setProperty('--fit', view === 'home' ? 1 : Math.min(1, window.innerWidth / w).toFixed(4));
+  }
+
+  function setView(id) {
+    desk.classList.remove('is-returning');
+    desk.classList.add('is-moving');
+    view = id;
+    desk.dataset.view = id;
+    if (id === 'home') seen = [];
+    else seen = seen.filter(s => s !== id).concat(id);
+
+    sheets.forEach(el => {
+      clearHand(el);
+      const k = el.id;
+      if (id === 'home') return unplace(el);
+      let to, z = '';
+      if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
+      else if (k === 'intro' || seen.includes(k)) { to = AWAY[k]; z = AWAY_Z[k]; }
+      else { to = PILE[k] || HOME[k]; if (k === 'education') z = AWAY_Z.education; }
+      place(el, HOME[k], to);
+      el.style.zIndex = z;
+    });
+
+    // event photos lie on Conferences and travel with it
+    const conf = document.getElementById('conferences');
+    snaps.forEach((el, i) => {
+      clearHand(el);
+      ['--sx', '--sy'].forEach(p => {
+        const v = conf.style.getPropertyValue(p);
+        v ? el.style.setProperty(p, v) : el.style.removeProperty(p);
+      });
+      const dr = (parseFloat(conf.style.getPropertyValue('--rot')) || 0) - baseRot.get(conf);
+      if (id === 'home') el.style.removeProperty('--rot');
+      else el.style.setProperty('--rot', (baseRot.get(el) + dr) + 'deg');
+      const cz = parseInt(conf.style.zIndex, 10);
+      cz ? el.style.zIndex = cz + 1 + i : el.style.removeProperty('z-index');
+    });
+
+    if (!cardPinned) {
+      clearHand(card);
+      if (id === 'home') unplace(card);
+      else { place(card, HOME.card, CARD); card.style.zIndex = CARD_Z; }
+    } else card.style.zIndex = CARD_Z;
+
+    top = Math.max(CARD_Z, ...items.map(el => parseInt(el.style.zIndex, 10) || 0));
+    resetBtn.hidden = id === 'home' && !cardPinned;
+    fit();
+  }
+
+  // menu
   document.querySelectorAll('.menu a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
-      const target = document.getElementById(a.getAttribute('href').slice(1));
-      if (!target || !target.hasAttribute('data-drag')) return;
+      const id = a.getAttribute('href').slice(1);
+      if (!CENTER[id]) return;
       e.preventDefault();
-      target.style.zIndex = ++top;
-      // things that lie on this sheet (event photos on Conferences) come up with it
-      desk.querySelectorAll(`[data-with="${target.id}"]`).forEach(el => { el.style.zIndex = ++top; });
-      const card = a.closest('[data-drag]');
-      if (card) card.style.zIndex = ++top;
-      resetBtn.hidden = false;
+      setView(id);
     });
   });
+
+  // First sheet aside: a click on it brings everything back
+  document.getElementById('intro').addEventListener('click', e => {
+    if (view !== 'home' && !e.target.closest('a')) setView('home');
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && view !== 'home') setView('home'); });
+
+  // the menu card moved by hand stays where it was put
+  card.addEventListener('pointerup', () => {
+    if (!card.classList.contains('is-dragging') && !(parseFloat(card.style.getPropertyValue('--dx')) || parseFloat(card.style.getPropertyValue('--dy')))) return;
+    if (!cardPinned) {
+      cardPinned = true;
+      // fold the view offset into the hand offset, so later views do not move it
+      const sx = parseFloat(card.style.getPropertyValue('--sx')) || 0;
+      const sy = parseFloat(card.style.getPropertyValue('--sy')) || 0;
+      card.style.setProperty('--dx', ((parseFloat(card.style.getPropertyValue('--dx')) || 0) + sx).toFixed(3));
+      card.style.setProperty('--dy', ((parseFloat(card.style.getPropertyValue('--dy')) || 0) + sy).toFixed(3));
+      card.style.setProperty('--sx', 0);
+      card.style.setProperty('--sy', 0);
+    }
+  }, true);
+
+  window.addEventListener('resize', fit);
 
   // "Download CV" without a file yet does nothing
   document.querySelectorAll('a[aria-disabled="true"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 
+  // "Put back": everything, the menu card too, goes home
   resetBtn.addEventListener('click', () => {
+    cardPinned = false;
+    items.forEach(clearHand);
+    setView('home');
     desk.classList.add('is-returning');
-    clearManual();
-    resetBtn.hidden = true;
+    top = Math.max(...items.map(el => parseInt(getComputedStyle(el).zIndex, 10) || 0));
   });
 })();
