@@ -21,8 +21,8 @@
    Both family names point to the same files, so the site does not depend on
    fonts installed on the visitor's computer. The Display look is switched on
    with font-variation-settings (see body and .medeo-text below).
-   Bodoni 72 is an Apple system font and cannot be shipped: Macs use their own,
-   everyone else gets Bodoni Moda from Google Fonts (linked in index.html).
+   ITC Bodoni Seventytwo comes from Adobe Fonts ("itc-bodoni-seventytwo-pro",
+   linked in index.html). If it does not load, Macs fall back to their own Bodoni 72.
    ========================================================================== */
 
 @font-face {
@@ -54,6 +54,15 @@
   font-display: swap;
 }
 
+/* Instrument Serif (menu title "Contents"), open licence OFL-1.1 */
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("../fonts/InstrumentSerif-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #060709;
   --paper: #e5e6e8;
@@ -64,9 +73,9 @@
   --card-ink: #1d2b38;
   --menu-ink: #333a41;
 
-  --font-display: "itc-bodoni-seventytwo", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
-  --font-italic: "itc-bodoni-seventytwo", "Bodoni 72", "Bodoni 72 Oldstyle", "Bodoni Moda", "Didot", "Bodoni MT", Georgia, serif;
-  --font-title: "Instrument Serif", "Bodoni 72 Oldstyle", "Bodoni Moda", Georgia, serif;
+  --font-display: "itc-bodoni-seventytwo-pro", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
+  --font-italic: "itc-bodoni-seventytwo-pro", "Bodoni 72", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
+  --font-title: "Instrument Serif", "itc-bodoni-seventytwo-pro", Georgia, serif;
   --font-text: "Medeo Sans Display", "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
