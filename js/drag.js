@@ -115,6 +115,8 @@
   const baseRot = new Map(items.map(el => [el, parseFloat(getComputedStyle(el).getPropertyValue('--rot')) || 0]));
   let view = 'home';
   let cardPinned = false;                    // the visitor moved the menu card by hand: leave it there
+  let phaseTimer = 0;
+  let lastPlaced = { ...HOME };              // where each sheet was sent last time
 
   function place(el, home, to) {
     el.style.setProperty('--sx', ((to[0] - home[0]) * PX).toFixed(3));
@@ -177,27 +179,61 @@
     view = id;
     desk.dataset.view = id;
     const at = SEQ.indexOf(id);
+    const chosen = id === 'home' ? 'intro' : id;
+    clearTimeout(phaseTimer);
 
-    const placed = {};
-    let step = 0;
+    // where every sheet goes
+    const placed = {}, zs = {};
     sheets.forEach(el => {
-      clearHand(el);
       const k = el.id;
-      el.style.removeProperty('--delay');
-      if (id === 'home') return unplace(el);
-      let to, z = '';
-      if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
-      else if (k === 'intro' || SEQ.indexOf(k) < at) { to = AWAY[k]; z = AWAY_Z[k]; }
-      else to = PILE[k] || HOME[k];
-      place(el, HOME[k], to);
+      let to = HOME[k], z = '';
+      if (id !== 'home') {
+        if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
+        else if (k === 'intro' || SEQ.indexOf(k) < at) { to = AWAY[k]; z = AWAY_Z[k]; }
+        else to = PILE[k] || HOME[k];
+      }
       placed[k] = to;
-      el.style.zIndex = z;
-      // a little delay one after another, so the sheets do not all move as one block
-      el.style.setProperty('--delay', (k === id ? 0 : 0.05 * (++step)).toFixed(2) + 's');
+      zs[k] = z;
     });
+
+    // Two steps: first the sheets in the way slide off (one after another, the top one first),
+    // then the chosen section comes up.
+    const moved = k => String(lastPlaced[k]) !== String(placed[k]);
+    const side = k => (k === 'intro' ? -1 : SEQ.indexOf(k));
+    const goingLeft = sheets.map(el => el.id).filter(k => k !== chosen && moved(k) && zs[k] >= AWAY_Z.intro)
+      .sort((a, b) => side(a) - side(b));
+    const coming = sheets.map(el => el.id).filter(k => k !== chosen && moved(k) && !goingLeft.includes(k))
+      .sort((a, b) => side(b) - side(a));
+    const movers = [...goingLeft, ...coming];
+    const STEP = 0.09;
+    const delay = {};
+    movers.forEach((k, i) => { delay[k] = i * STEP; });
+    delay[chosen] = movers.length ? 0.35 + STEP * (movers.length - 1) : 0;
+
+    const chosenEl = document.getElementById(chosen);
+    const chosenZ = chosenEl.style.zIndex;     // it stays at its place in the pile until its turn
+    sheets.forEach(el => {
+      const k = el.id;
+      clearHand(el);
+      if (id === 'home') unplace(el);
+      else place(el, HOME[k], placed[k]);
+      el.style.zIndex = zs[k];
+      el.style.setProperty('--delay', (delay[k] || 0).toFixed(2) + 's');
+    });
+    lastPlaced = placed;
 
     confNow = id === 'home' ? null : placed.conferences.slice();
     placeSnaps(true);
+
+    if (delay[chosen]) {
+      const raise = () => {
+        chosenEl.style.zIndex = zs[chosen];
+        if (chosen === 'conferences') placeSnaps(true);
+      };
+      chosenEl.style.zIndex = chosenZ;
+      if (chosen === 'conferences') snaps.forEach((n, i) => { n.style.zIndex = (parseInt(chosenZ, 10) || 3) + 1 + i; });
+      phaseTimer = setTimeout(raise, delay[chosen] * 1000);
+    }
 
     if (!cardPinned) {
       clearHand(card);
@@ -420,7 +456,7 @@
       el.classList.remove('is-dragging', 'is-open');
     });
     desk.classList.remove('is-moving', 'is-returning');
-    view = 'home'; cardPinned = false; confNow = null;
+    view = 'home'; cardPinned = false; confNow = null; lastPlaced = { ...HOME }; clearTimeout(phaseTimer);
     desk.dataset.view = 'home';
     desk.style.setProperty('--fit', 1);
     resetBtn.hidden = true;
