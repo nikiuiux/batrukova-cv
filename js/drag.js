@@ -152,7 +152,8 @@
   let confNow = null;                        // where Conferences is now, null = at home
   // spread out after a click: [left, top, Figma rotation] from the sheet corner, Figma px.
   // They fill the free space right of and under the list.
-  const SPREAD = [[335, 95, 2], [345, 300, -2.5], [178, 555, -1.5], [20, 528, 1.5], [352, 522, 2]];
+  // (Muravyov top right, the EEF stage under it, a row of three under the list: map, foresight session, EEF)
+  const SPREAD = [[336, 112, 0.5], [177, 527, -1.5], [303, 352, -1.5], [18, 528, 1], [338, 525, 1]];
   let spread = false;
   function placeSnaps(all) {
     const conf = document.getElementById('conferences');
