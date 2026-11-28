@@ -78,7 +78,8 @@
   // Storyboard (Figma section "Раскадровка").
   // All coordinates are Figma px in the 1440 × 900 frame, rotation in Figma degrees.
   // A menu click puts the chosen sheet in the centre, First and the sheets already
-  // seen go aside, the menu card moves to the right.
+  // before it in the menu are turned over to the left like pages of a book, the ones
+  // after it stay in the pile under it; the menu card moves to the right.
   // ==========================================================================
 
   const PX = 1 / 5.25;                       // Figma px → cqw
@@ -94,18 +95,18 @@
     publications: [514, 179, 0], awards: [525, 287, 0],
     education: [514, 179, 0],                // not in the storyboard yet
   };
-  // sheets already seen (and First) are put aside, all in one stack on the left
+  // sheets before the open one (and First) are turned over to one stack on the left
   const AWAY = {
     intro: [-139, 82, 0], work: [-168, 111, 0], teaching: [-74, 205, 0], conferences: [-150, 90, 0],
     education: [-120, 160, 0], publications: [-100, 140, 0], awards: [-60, 300, 0],
   };
-  // sheets not seen yet shift a little in the pile once First is gone
+  // sheets after the open one shift a little in the pile once First is gone
   const PILE = { conferences: [464.47, 77.47, -1], teaching: [452, 266, 0], education: AWAY.education };
   const CARD = [1054, 74, 0];
-  // the left stack follows the menu order: Work on top, then Teaching, Education,
-  // Conferences, Publications, Awards, First at the bottom.
-  // Education not opened yet hides under all of them.
-  const AWAY_Z = { education_hidden: 5, intro: 10, awards: 20, publications: 30, conferences: 40, education: 60, teaching: 70, work: 80 };
+  // the left stack is turned over page by page: First at the bottom, the latest turned sheet on top.
+  // Education, while it is still ahead, hides under all of them.
+  const AWAY_Z = { education_hidden: 5, intro: 10, work: 20, teaching: 30, education: 40, conferences: 50, publications: 60, awards: 70 };
+  const SEQ = ['work', 'teaching', 'education', 'conferences', 'publications', 'awards'];   // menu order
   const ACTIVE_Z = 100, CARD_Z = 200;
 
   const card = desk.querySelector('.card');
@@ -113,7 +114,6 @@
   const snaps = [...desk.querySelectorAll('[data-with]')];
   const baseRot = new Map(items.map(el => [el, parseFloat(getComputedStyle(el).getPropertyValue('--rot')) || 0]));
   let view = 'home';
-  let seen = [];
   let cardPinned = false;                    // the visitor moved the menu card by hand: leave it there
 
   function place(el, home, to) {
@@ -176,8 +176,7 @@
     desk.classList.add('is-moving');
     view = id;
     desk.dataset.view = id;
-    if (id === 'home') seen = [];
-    else seen = seen.filter(s => s !== id).concat(id);
+    const at = SEQ.indexOf(id);
 
     const placed = {};
     let step = 0;
@@ -188,7 +187,7 @@
       if (id === 'home') return unplace(el);
       let to, z = '';
       if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
-      else if (k === 'intro' || seen.includes(k)) { to = AWAY[k]; z = AWAY_Z[k]; }
+      else if (k === 'intro' || SEQ.indexOf(k) < at) { to = AWAY[k]; z = AWAY_Z[k]; }
       else { to = PILE[k] || HOME[k]; if (k === 'education') z = AWAY_Z.education_hidden; }
       place(el, HOME[k], to);
       placed[k] = to;
@@ -220,6 +219,13 @@
       if (isPhone()) return phoneOpen(id);
       setView(id);
     });
+  });
+
+  // "Contents" on the menu card leads back to the first frame
+  card.querySelector('.card__home').addEventListener('click', e => {
+    e.preventDefault();
+    if (isPhone()) { if (deck[0] !== 'intro') phoneOpen('intro'); }
+    else if (view !== 'home') setView('home');
   });
 
   // First sheet aside: a click on it brings everything back
@@ -414,7 +420,7 @@
       el.classList.remove('is-dragging', 'is-open');
     });
     desk.classList.remove('is-moving', 'is-returning');
-    view = 'home'; seen = []; cardPinned = false; confNow = null;
+    view = 'home'; cardPinned = false; confNow = null;
     desk.dataset.view = 'home';
     desk.style.setProperty('--fit', 1);
     resetBtn.hidden = true;
