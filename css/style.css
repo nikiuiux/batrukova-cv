@@ -93,7 +93,7 @@ b { font-weight: 600; }
   container-type: inline-size;
   --fit: 1;
   scale: var(--fit);
-  transition: scale 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: scale 1.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---------- dragging ---------- */
@@ -123,7 +123,8 @@ b { font-weight: 600; }
 
 .is-returning [data-drag],
 .is-moving [data-drag] {
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), scale 0.2s ease, box-shadow 0.2s ease;
+  /* long, soft slide that slows down gently at the end; --delay staggers the sheets */
+  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s), scale 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* ==========================================================================
@@ -244,17 +245,16 @@ b { font-weight: 600; }
 .event__details { line-height: normal; color: rgba(29, 43, 56, 0.6); }
 .event__details--narrow { max-width: 43.429cqw; }                  /* 228px */
 
-/* ---------- Event photos (181 × 227 each), in the free space of Conferences
-   between the title and the list, left of the menu card ---------- */
+/* ---------- Event photos (181 × 227 each), top-right corner of Conferences ---------- */
 
 .snap {
   z-index: 3;                                /* same layer as Conferences, above it in the HTML */
-  left: 19.048cqw;  top: 14.476cqw;          /* 100, 76 from the sheet corner */
+  left: 61.714cqw;  top: 3.81cqw;            /* 324, 20 from the sheet corner */
   width: 34.476cqw; height: 43.238cqw;
   object-fit: cover;
   display: block;
 }
-.snap--2 { --rot: 2.42deg; left: 20.19cqw; top: 13.524cqw; }
+.snap--2 { --rot: 2.42deg; left: 62.857cqw; top: 2.857cqw; }
 
 /* ---------- Teaching experience (412 × 541, white) ---------- */
 

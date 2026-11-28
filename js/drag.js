@@ -90,19 +90,19 @@
     publications: [514, 179, 0], awards: [525, 287, 0],
     education: [514, 179, 0],                // not in the storyboard yet
   };
-  // sheets already seen (and First) are put aside
+  // sheets already seen (and First) are put aside, all in one stack on the left
   const AWAY = {
     intro: [-139, 82, 0], work: [-168, 111, 0], teaching: [-74, 205, 0], conferences: [-150, 90, 0],
-    publications: [992, 21, 0],
-    awards: [1000, 470, 0], education: [-120, 250, 0],   // not in the storyboard yet
+    education: [-120, 160, 0], publications: [-100, 140, 0], awards: [-60, 300, 0],
   };
   // sheets not seen yet shift a little in the pile once First is gone
   const PILE = { conferences: [464.47, 77.47, -1], teaching: [452, 266, 0], education: AWAY.education };
   const CARD = [1054, 74, 0];
-  // stacking aside: left pile bottom to top, then the right side
-  // (Education, not in the storyboard yet, hides at the bottom of the left pile until opened)
-  const AWAY_Z = { education: 9, conferences: 10, intro: 15, teaching: 16, work: 17, publications: 18, awards: 19 };
-  const ACTIVE_Z = 20, CARD_Z = 30;
+  // the left stack follows the menu order: Work on top, then Teaching, Education,
+  // Conferences, Publications, Awards, First at the bottom.
+  // Education not opened yet hides under all of them.
+  const AWAY_Z = { education_hidden: 5, intro: 10, awards: 20, publications: 30, conferences: 40, education: 60, teaching: 70, work: 80 };
+  const ACTIVE_Z = 100, CARD_Z = 200;
 
   const card = desk.querySelector('.card');
   const sheets = Object.keys(HOME).filter(k => k !== 'card').map(k => document.getElementById(k)).filter(Boolean);
@@ -140,31 +140,42 @@
     if (id === 'home') seen = [];
     else seen = seen.filter(s => s !== id).concat(id);
 
+    const placed = {};
+    let step = 0;
     sheets.forEach(el => {
       clearHand(el);
       const k = el.id;
+      el.style.removeProperty('--delay');
       if (id === 'home') return unplace(el);
       let to, z = '';
       if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
       else if (k === 'intro' || seen.includes(k)) { to = AWAY[k]; z = AWAY_Z[k]; }
-      else { to = PILE[k] || HOME[k]; if (k === 'education') z = AWAY_Z.education; }
+      else { to = PILE[k] || HOME[k]; if (k === 'education') z = AWAY_Z.education_hidden; }
       place(el, HOME[k], to);
+      placed[k] = to;
       el.style.zIndex = z;
+      // a little delay one after another, so the sheets do not all move as one block
+      el.style.setProperty('--delay', (k === id ? 0 : 0.05 * (++step)).toFixed(2) + 's');
     });
 
-    // event photos lie on Conferences and travel with it
+    // event photos lie in the top-right corner of Conferences and travel with it,
+    // turning around the sheet corner together with the sheet
     const conf = document.getElementById('conferences');
     snaps.forEach((el, i) => {
       clearHand(el);
-      ['--sx', '--sy'].forEach(p => {
-        const v = conf.style.getPropertyValue(p);
-        v ? el.style.setProperty(p, v) : el.style.removeProperty(p);
-      });
-      const dr = (parseFloat(conf.style.getPropertyValue('--rot')) || 0) - baseRot.get(conf);
-      if (id === 'home') el.style.removeProperty('--rot');
-      else el.style.setProperty('--rot', (baseRot.get(el) + dr) + 'deg');
+      el.style.setProperty('--delay', conf.style.getPropertyValue('--delay') || '0s');
+      if (id === 'home') return unplace(el);
+      const [cx, cy, cr] = placed.conferences;
+      const ox = el.offsetLeft * 5.25 / (desk.offsetWidth / 100);   // photo corner from the sheet corner, Figma px
+      const oy = el.offsetTop * 5.25 / (desk.offsetWidth / 100);
+      const a = cr * Math.PI / 180;                                   // Figma turns counter-clockwise
+      const x = cx + ox * Math.cos(a) + oy * Math.sin(a);
+      const y = cy - ox * Math.sin(a) + oy * Math.cos(a);
+      place(el, [HOME.conferences[0] + ox, HOME.conferences[1] + oy, 0], [x, y, cr]);
+      // on the open sheet the photos lie on top; in the left stack they hide under the sheet,
+      // so they do not peek out from behind the other sheets
       const cz = parseInt(conf.style.zIndex, 10);
-      cz ? el.style.zIndex = cz + 1 + i : el.style.removeProperty('z-index');
+      if (cz) el.style.zIndex = id === 'conferences' ? cz + 1 + i : cz - 5 + i;
     });
 
     if (!cardPinned) {
