@@ -42,5 +42,5 @@ https://nikiuiux.github.io/batrukova-cv/
 
 ## Шрифты
 
-- Medeo Sans и Instrument Serif лежат в папке `fonts`.
+- Medeo Sans лежит в папке `fonts`.
 - ITC Bodoni Seventytwo подключается из Adobe Fonts строкой `use.typekit.net/mov4rsg.css` в `index.html` (веб-проект «Batrukova CV» в аккаунте Adobe). Файлы этого шрифта на сайт класть нельзя, так требует лицензия Adobe. Если подписка закончится, шрифт пропадёт, и сайт покажет запасной Bodoni.

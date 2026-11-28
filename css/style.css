@@ -54,15 +54,6 @@
   font-display: swap;
 }
 
-/* Instrument Serif (menu title "Contents"), open licence OFL-1.1 */
-@font-face {
-  font-family: "Instrument Serif";
-  src: url("../fonts/InstrumentSerif-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --bg: #060709;
   --paper: #e5e6e8;
@@ -75,7 +66,7 @@
 
   --font-display: "itc-bodoni-seventytwo-pro", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
   --font-italic: "itc-bodoni-seventytwo-pro", "Bodoni 72", "Bodoni 72 Oldstyle", "Didot", "Bodoni MT", Georgia, serif;
-  --font-title: "Instrument Serif", "itc-bodoni-seventytwo-pro", Georgia, serif;
+  --font-title: var(--font-display);   /* menu title "Contents" is Bodoni too */
   --font-text: "Medeo Sans Display", "Medeo Sans", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
