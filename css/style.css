@@ -142,7 +142,8 @@ b { font-weight: 600; }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;   /* title on top, content at the bottom */
+  justify-content: flex-start;      /* title on top, content right under it */
+  gap: 4.571cqw;                    /* 24px between the title and the text */
 }
 
 .sheet__title {
@@ -220,7 +221,7 @@ b { font-weight: 600; }
   left: 10.667cqw;  top: 18.476cqw;          /* 514, 179 */
   width: 78.476cqw; height: 103.048cqw;
   padding: 3.048cqw;
-  justify-content: flex-end;
+  padding-top: 16cqw;               /* pinned title 18 + 42, then 24px */
   background: #f0f1f4;
 }
 
@@ -269,7 +270,7 @@ b { font-weight: 600; }
   left: 0;          top: 36.19cqw;           /* 458, 272 */
   width: 78.476cqw; height: 103.048cqw;
   padding: 3.048cqw;
-  justify-content: flex-end;
+  padding-top: 16cqw;               /* pinned title 18 + 42, then 24px */
   background: #ffffff;
 }
 
@@ -322,6 +323,8 @@ b { font-weight: 600; }
   left: 0;          top: 0;
   width: 100cqw;    height: 140.381cqw;
   padding: 3.81cqw;                          /* 20px */
+  justify-content: space-between;   /* First keeps its own layout: contacts at the bottom */
+  gap: 0;
   background: #f2f4fa;
   box-shadow: 0 0.762cqw 0.762cqw rgba(0, 0, 0, 0.05), 0 -0.19cqw 1.295cqw rgba(0, 0, 0, 0.05);
 }
