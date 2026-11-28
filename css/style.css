@@ -460,8 +460,9 @@ b { font-weight: 600; }
   .card { cursor: pointer; }
   .card > * { transition: opacity 0.3s ease; }
   .card:not(.is-open) > * { opacity: 0; }     /* closed: just a blue strip at the edge */
-  .reset { display: none; }
+  .reset:not(.to-start) { display: none; }
 }
+@media (min-width: 641px) { .to-start { display: none; } }
 
 @media (prefers-reduced-motion: reduce) {
   [data-drag], .is-returning [data-drag], .is-moving [data-drag], .desk { transition: none; }
