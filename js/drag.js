@@ -27,6 +27,8 @@
         moved: false,
       };
       el.style.zIndex = ++top;
+      // the sheet on top is always level: a clicked sheet turns straight
+      if (el.classList.contains('sheet')) straighten(el);
     });
 
     el.addEventListener('pointermove', e => {
@@ -126,6 +128,41 @@
     el.style.removeProperty('z-index');
   }
 
+  // event photos lie in the top-right corner of Conferences and travel with it,
+  // turning around the sheet corner together with the sheet
+  let confNow = null;                        // where Conferences is now, null = at home
+  function placeSnaps(all) {
+    const conf = document.getElementById('conferences');
+    snaps.forEach((el, i) => {
+      const byHand = el.style.getPropertyValue('--dx') || el.style.getPropertyValue('--dy');
+      if (!all && byHand) return;            // a photo moved by hand stays where it was put
+      if (all) clearHand(el);
+      el.style.setProperty('--delay', conf.style.getPropertyValue('--delay') || '0s');
+      if (!confNow) { if (all) unplace(el); return; }
+      const [cx, cy, cr] = confNow;
+      const ox = el.offsetLeft * 5.25 / (desk.offsetWidth / 100);   // photo corner from the sheet corner, Figma px
+      const oy = el.offsetTop * 5.25 / (desk.offsetWidth / 100);
+      const a = cr * Math.PI / 180;                                   // Figma turns counter-clockwise
+      const x = cx + ox * Math.cos(a) + oy * Math.sin(a);
+      const y = cy - ox * Math.sin(a) + oy * Math.cos(a);
+      place(el, [HOME.conferences[0] + ox, HOME.conferences[1] + oy, 0], [x, y, cr]);
+      if (!all) return;
+      // on the open sheet the photos lie on top; in the left stack they hide under the sheet,
+      // so they do not peek out from behind the other sheets
+      const cz = parseInt(conf.style.zIndex, 10);
+      if (cz) el.style.zIndex = view === 'conferences' ? cz + 1 + i : cz - 5 + i;
+    });
+  }
+
+  function straighten(el) {
+    el.style.setProperty('--rot', '0deg');
+    if (el.id === 'conferences') {
+      if (confNow) confNow[2] = 0;
+      else if (baseRot.get(el)) confNow = [...HOME.conferences.slice(0, 2), 0];
+      placeSnaps(false);
+    }
+  }
+
   function fit() {
     // the whole 1440-wide composition has to fit on narrow screens
     const w = desk.offsetWidth * 1440 / 525;
@@ -158,25 +195,8 @@
       el.style.setProperty('--delay', (k === id ? 0 : 0.05 * (++step)).toFixed(2) + 's');
     });
 
-    // event photos lie in the top-right corner of Conferences and travel with it,
-    // turning around the sheet corner together with the sheet
-    const conf = document.getElementById('conferences');
-    snaps.forEach((el, i) => {
-      clearHand(el);
-      el.style.setProperty('--delay', conf.style.getPropertyValue('--delay') || '0s');
-      if (id === 'home') return unplace(el);
-      const [cx, cy, cr] = placed.conferences;
-      const ox = el.offsetLeft * 5.25 / (desk.offsetWidth / 100);   // photo corner from the sheet corner, Figma px
-      const oy = el.offsetTop * 5.25 / (desk.offsetWidth / 100);
-      const a = cr * Math.PI / 180;                                   // Figma turns counter-clockwise
-      const x = cx + ox * Math.cos(a) + oy * Math.sin(a);
-      const y = cy - ox * Math.sin(a) + oy * Math.cos(a);
-      place(el, [HOME.conferences[0] + ox, HOME.conferences[1] + oy, 0], [x, y, cr]);
-      // on the open sheet the photos lie on top; in the left stack they hide under the sheet,
-      // so they do not peek out from behind the other sheets
-      const cz = parseInt(conf.style.zIndex, 10);
-      if (cz) el.style.zIndex = id === 'conferences' ? cz + 1 + i : cz - 5 + i;
-    });
+    confNow = id === 'home' ? null : placed.conferences.slice();
+    placeSnaps(true);
 
     if (!cardPinned) {
       clearHand(card);

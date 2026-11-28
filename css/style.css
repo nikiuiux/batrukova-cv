@@ -106,17 +106,21 @@ b { font-weight: 600; }
   --rot: 0deg;
   position: absolute;
   transform-origin: 0 0;   /* rotate like Figma: around the top-left corner */
-  transform: translate(calc((var(--dx) + var(--sx)) * 1cqw), calc((var(--dy) + var(--sy)) * 1cqw)) rotate(var(--rot));
+  translate: calc((var(--dx) + var(--sx)) * 1cqw) calc((var(--dy) + var(--sy)) * 1cqw);
+  rotate: var(--rot);
   cursor: grab;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  transition: scale 0.2s ease, box-shadow 0.2s ease;
+  /* a sheet that is clicked turns level smoothly (see js/drag.js) */
+  transition: translate 0.8s cubic-bezier(0.22, 1, 0.36, 1), rotate 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              scale 0.2s ease, box-shadow 0.2s ease;
 }
 
 [data-drag].is-dragging {
   cursor: grabbing;
+  transition: rotate 0.8s cubic-bezier(0.22, 1, 0.36, 1), scale 0.2s ease, box-shadow 0.2s ease;
   scale: 1.01;
   box-shadow: 0 3cqw 6cqw rgba(0, 0, 0, 0.45);
 }
@@ -124,7 +128,9 @@ b { font-weight: 600; }
 .is-returning [data-drag],
 .is-moving [data-drag] {
   /* long, soft slide that slows down gently at the end; --delay staggers the sheets */
-  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s), scale 0.2s ease, box-shadow 0.2s ease;
+  transition: translate 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s),
+              rotate 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s),
+              scale 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* ==========================================================================
