@@ -249,12 +249,12 @@ b { font-weight: 600; }
 
 .snap {
   z-index: 3;                                /* same layer as Conferences, above it in the HTML */
-  left: 61.714cqw;  top: 3.81cqw;            /* 324, 20 from the sheet corner */
+  left: 61.714cqw;  top: 15.238cqw;          /* 324, 80: under the sheet title */
   width: 34.476cqw; height: 43.238cqw;
   object-fit: cover;
   display: block;
 }
-.snap--2 { --rot: 2.42deg; left: 62.857cqw; top: 2.857cqw; }
+.snap--2 { --rot: 2.42deg; left: 62.857cqw; top: 14.286cqw; }
 
 /* ---------- Teaching experience (412 × 541, white) ---------- */
 
