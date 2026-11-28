@@ -242,6 +242,18 @@ b { font-weight: 600; }
 .event__details { line-height: normal; color: rgba(29, 43, 56, 0.6); }
 .event__details--narrow { max-width: 43.429cqw; }                  /* 228px */
 
+/* ---------- Event photos (181 × 227 each), in the free space of Conferences
+   between the title and the list, left of the menu card ---------- */
+
+.snap {
+  z-index: 3;                                /* same layer as Conferences, above it in the HTML */
+  left: 19.048cqw;  top: 14.476cqw;          /* 100, 76 from the sheet corner */
+  width: 34.476cqw; height: 43.238cqw;
+  object-fit: cover;
+  display: block;
+}
+.snap--2 { --rot: 2.42deg; left: 20.19cqw; top: 13.524cqw; }
+
 /* ---------- Teaching experience (412 × 541, white) ---------- */
 
 .sheet--teaching {

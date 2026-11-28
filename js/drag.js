@@ -88,6 +88,8 @@
       if (!target || !target.hasAttribute('data-drag')) return;
       e.preventDefault();
       target.style.zIndex = ++top;
+      // things that lie on this sheet (event photos on Conferences) come up with it
+      desk.querySelectorAll(`[data-with="${target.id}"]`).forEach(el => { el.style.zIndex = ++top; });
       const card = a.closest('[data-drag]');
       if (card) card.style.zIndex = ++top;
       resetBtn.hidden = false;
