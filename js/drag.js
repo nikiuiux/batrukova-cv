@@ -369,7 +369,7 @@
   toStart.addEventListener('click', () => phoneOpen('intro', -1));
 
   function phoneLayout() {
-    toStart.hidden = deck[0] === 'intro';    // "Back to start" shows once the first sheet is not on top
+    toStart.hidden = deck[0] === 'intro';    // "Home" shows once the first sheet is not on top
     deck.forEach((k, i) => {
       const el = document.getElementById(k);
       const to = i === 0 ? (CENTER[k] || HOME[k]) : HOME[k];
