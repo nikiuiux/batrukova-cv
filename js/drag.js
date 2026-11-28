@@ -101,11 +101,11 @@
     education: [-120, 160, 0], publications: [-100, 140, 0], awards: [-60, 300, 0],
   };
   // sheets after the open one shift a little in the pile once First is gone
-  const PILE = { conferences: [464.47, 77.47, -1], teaching: [452, 266, 0], education: AWAY.education };
+  const PILE = { conferences: [464.47, 77.47, -1], teaching: [452, 266, 0] };
   const CARD = [1054, 74, 0];
   // the left stack is turned over page by page: First at the bottom, the latest turned sheet on top.
-  // Education, while it is still ahead, hides under all of them.
-  const AWAY_Z = { education_hidden: 5, intro: 10, work: 20, teaching: 30, education: 40, conferences: 50, publications: 60, awards: 70 };
+  // Sheets still ahead wait in the pile under the open one, Education at the very bottom of it.
+  const AWAY_Z = { intro: 10, work: 20, teaching: 30, education: 40, conferences: 50, publications: 60, awards: 70 };
   const SEQ = ['work', 'teaching', 'education', 'conferences', 'publications', 'awards'];   // menu order
   const ACTIVE_Z = 100, CARD_Z = 200;
 
@@ -188,7 +188,7 @@
       let to, z = '';
       if (k === id) { to = CENTER[k]; z = ACTIVE_Z; }
       else if (k === 'intro' || SEQ.indexOf(k) < at) { to = AWAY[k]; z = AWAY_Z[k]; }
-      else { to = PILE[k] || HOME[k]; if (k === 'education') z = AWAY_Z.education_hidden; }
+      else to = PILE[k] || HOME[k];
       place(el, HOME[k], to);
       placed[k] = to;
       el.style.zIndex = z;
