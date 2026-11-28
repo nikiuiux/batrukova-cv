@@ -265,7 +265,7 @@
   // ==========================================================================
   // Phone. No spreading out: the sheets stay in the pile of the first frame and
   // change places in it. The open sheet is on top; a swipe tucks it under the pile
-  // (left = next, right = back). The menu card lies on the pile in the first frame;
+  // to the left and the next section comes up (there is no swiping back). The menu card lies on the pile in the first frame;
   // after the first section is opened it waits as a blue strip at the right edge,
   // a tap slides it out.
   // ==========================================================================
@@ -294,13 +294,13 @@
 
   function phoneCard() {
     card.style.zIndex = 200;
-    if (cardHome) {                          // until the first section is opened
-      ['--sx', '--sy'].forEach(p => card.style.removeProperty(p));
+    const unit = desk.offsetWidth / 100;
+    const right = window.innerWidth - desk.getBoundingClientRect().left;   // screen edge, px from the sheet corner
+    if (cardHome) {                          // until the first section is opened: on the pile, as on desktop
+      ['--sx', '--sy'].forEach(p => card.style.removeProperty(p));   // (its empty right margin may hang off the screen)
       card.classList.add('is-open');
       return;
     }
-    const unit = desk.offsetWidth / 100;
-    const right = window.innerWidth - desk.getBoundingClientRect().left;   // screen edge, px from the sheet corner
     const x = menuOpen ? right - card.offsetWidth - 12 : right - 22;      // 22px of blue stays on screen
     card.style.setProperty('--sx', (x / unit - 56.571).toFixed(3));       // 56.571cqw = card home left
     card.style.setProperty('--sy', 0);
@@ -387,8 +387,7 @@
     const on = swipe.on;
     swipe = null;
     if (!on) return;
-    if (mx < -50) return phoneNext();
-    if (mx > 50) return phoneBack();
+    if (mx < -50) return phoneNext();        // only forward: a swipe to the right just puts the sheet back
     withPhotos(deck[0]).forEach(n => { n.classList.remove('is-dragging'); n.style.removeProperty('--dx'); });
   };
   desk.addEventListener('pointerup', swipeEnd);

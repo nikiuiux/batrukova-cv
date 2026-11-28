@@ -440,6 +440,8 @@ b { font-weight: 600; }
 /* ---------- phone: no dragging, swipe the pile, menu waits at the right edge ---------- */
 
 @media (max-width: 640px) {
+  /* sheet almost edge to edge, as little black around as possible */
+  .desk { width: min(94vw, calc(100dvh * 0.96 * 525 / 737)); }
   [data-drag] { cursor: default; touch-action: pan-y pinch-zoom; }
   .desk { touch-action: pan-y pinch-zoom; }
   .card { cursor: pointer; }
